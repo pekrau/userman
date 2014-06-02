@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block head_title %}User manager{% end %}</title>
+    <link rel="shortcut icon" href="{{ static_url('favicon.ico') }}" type="image/png">
+  </head>
+  <link rel="stylesheet" type="text/css" href="{{ static_url('standard.css') }}">
+  <body>
+
+    <header>
+      <table class="header">
+	<tr>
+	  <td rowspan="2" class="spacer3">
+	    <a href="{{ reverse_url('home') }}">
+	      <img src="{{ static_url('userman.png') }}"
+		   alt="Userman" title="Userman">
+	    </a>
+	  </td>
+	</tr>
+	<tr>
+	  <td class="title">
+	    {% block title %}User manager{% end %}
+	  </td>
+	</tr>
+      </table>
+
+      <div class="right">
+	{% block login %}
+	<div>
+	  {% if current_user %}
+	  Logged in as {% module User(current_user) %}
+	  {% end %}
+	</div>
+	{% end %}
+      </div>
+
+    </header>
+
+    <nav>
+      {% block navigation %}
+      <div><a href="{{ reverse_url('home') }}">Home</a></div>
+      <div><a href="{{ reverse_url('services') }}">Services</a></div>
+      {% if is_admin %}
+      <div class="menu1">
+	<div><a href="{{ reverse_url('service_create') }}">Create</a></div>
+      </div>
+      {% end %}
+      <div class="bold">User</div>
+      <div class="menu1">
+	{% if current_user %}
+	<div class="nobr">
+	  <a href="{{ reverse_url('user', current_user['email']) }}">My account</a>
+	</div>
+	{% else %}
+	<div><a href="{{ reverse_url('user_create') }}">Create</a></div>
+	<div><a href="{{ reverse_url('user_activate')}}">Activate</a></div>
+	{% end %}
+	<div><a href="{{ reverse_url('user_reset')}}">Reset</a></div>
+	{% if is_admin %}
+	<div><a href="{{ reverse_url('user_create')}}">Create</a></div>
+	{% end %}
+      </div>
+      {% if is_admin %}
+      <div><a href="{{ reverse_url('users') }}">Users</a></div>
+      <div class="menu1">
+	<div><a href="{{ reverse_url('users_pending') }}">Pending</a></div>
+	<div><a href="{{ reverse_url('users_blocked') }}">Blocked</a></div>
+      </div>
+      {% end %}
+      <div><a href="{{ reverse_url('teams') }}">Teams</a></div>
+      {% if current_user %}
+      <div class="menu1">
+	<div><a href="{{ reverse_url('team_create') }}">Create</a></div>
+      </div>
+      {% end %}
+      <div><a href="{{ reverse_url('version') }}">Version</a></div>
+      {% end %}
+    </nav>
+
+    <aside>
+      <div>
+	{% block actions %}
+	{% end %}
+      </div>
+    </aside>
+
+    {% block outer_content %}
+
+    <div class="content">
+      <table>
+	<tr>
+	  <td class="top">
+	    {% block content %}
+	    {% end %}
+	  </td>
+	  <td class="spacer3"></td>
+	  <td class="top">
+	    {% block notes %}
+	    {% end %}
+	  </td>
+	</tr>
+      </table>
+    </div>
+    {% end %}
+
+    <footer>
+      Userman {{ constants.VERSION }}
+    </footer>
+
+    {% block javascript_standard %}
+    <script type="text/javascript"
+	    src="{{ static_url('jquery-1.11.0/jquery.min.js') }}">
+    </script>
+    <script type="text/javascript"
+	    src="{{ static_url('jquery-1.11.0/jquery.localtime-0.9.1.min.js') }}">
+    </script>
+    {% end %}
+
+    {% block javascript_code %}
+    {% end %}
+  </body>
+</html>

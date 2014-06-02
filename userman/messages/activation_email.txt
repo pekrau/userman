@@ -1,0 +1,12 @@
+You have created a new user account with the Userman service.
+The account has been approved by the administrator.
+
+Now you need to activate it and set the password for it.
+
+Go to {url} and enter the following information:
+
+User email:      {email}
+Activation code: {code}
+Password:        [your choice]
+
+/The Userman administrator.

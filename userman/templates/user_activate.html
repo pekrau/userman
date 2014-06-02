@@ -1,0 +1,108 @@
+{# User activate page. #}
+
+{% block head_title %}
+Activate User
+{% end %}
+
+{% block title %}
+{% module Icon('activate') %}
+Activate
+{% module Icon('user') %}
+User
+{% end %}
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<p>
+  When you have received an activation code in an email,
+  use it here to (re)set your password.
+</p>
+
+<p>
+  An activation code is sent to you for one the following reasons:
+  <ul>
+    <li> The administrator has approved your account after you created it.
+    <li> You have used the password reset feature.
+  </ul>
+</p>
+
+<p>
+  If your activation code has expired, use the
+  <a href="{{ reverse_url('user_reset') }}">reset page</a>
+  to obtain a new one.
+</p>
+
+<form action="{{ reverse_url('user_activate') }}" method="POST">
+  {% module xsrf_form_html() %}
+
+  <fieldset>
+
+    <legend>Activate the user account</legend>
+
+    {% if error %}
+    <p class="error">
+      Error: {{ error }}
+    </p>
+    {% end %}
+
+    <table class="fields">
+
+      <tr>
+	<th>User email</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  <input type="email" name="email" size="40"
+		 value="{{ email }}">
+	</td>
+	<td class="description">
+	  The email address of the user account.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Activation code</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  <input type="text" name="activation_code" size="32"
+		 value="{{ activation_code }}">
+	</td>
+	<td class="description">
+	  The activation code you have received by email.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Password</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td><input type="password" name="password"></td>
+	<td class="description">
+	  Set the password; at least 6 characters long.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Confirm password</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td><input type="password" name="confirm_password"></td>
+	<td class="description">
+	  Confirm the password.
+	</td>
+      </tr>
+
+      <tr>
+	<th></th>
+	<td></td>
+	<td>
+	  {% module Submit('submit') %}
+	</td>
+      </tr>
+
+    </table>
+
+  </fieldset>
+
+</form>
+
+{% end %}

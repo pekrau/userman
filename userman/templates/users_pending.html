@@ -1,0 +1,42 @@
+{# Pending users page. #}
+
+{% extends "base.html" %}
+
+{% block head_title %}
+Pending Users
+{% end %}
+
+{% block title %}
+{% module Icon('pending') %}
+Pending
+{% module Icon('user') %}
+Users
+{% end %}
+
+{% block content %}
+
+<table class="list">
+
+  <tr>
+    <th>Email</th>
+    <th>Name</th>
+    <th>University</th>
+    <th>Department</th>
+    <th>Created</th>
+  </tr>
+
+  {% for user in users %}
+  <tr>
+    <td>
+      <a href="{{ reverse_url('user', user['email']) }}">{{ user['email'] }}</a>
+    </td>
+    <td>{{ user.get('fullname') or '' }}</td>
+    <td>{{ user.get('university') or '' }}</td>
+    <td>{{ user.get('department') or '' }}</td>
+    <td class="localtime">{{ user['created'] }}</td>
+  </tr>
+  {% end %}
+
+</table>
+
+{% end %}

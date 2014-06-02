@@ -1,0 +1,145 @@
+{# User edit page. #}
+
+{% extends "base.html" %}
+
+{% block head_title %}
+Edit User {{ user['email'] }}
+{% end %}
+
+{% block title %}
+{% module Icon('edit', label=True) %}
+{% module Icon('user', label=True) %}
+{{ user['email'] }}
+{% end %}
+
+{% block actions %}
+<form action="{{ reverse_url('user', user['email']) }}">
+  {% module Submit('cancel') %}
+</form>
+{% end %}
+
+{% block content %}
+
+<form action="{{ reverse_url('user_edit', user['email']) }}"
+      method="POST">
+  {% module xsrf_form_html() %}
+
+  <fieldset>
+
+    <legend>Edit user account information</legend>
+
+    <table class="fields">
+
+      <tr>
+	<th>Email</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>{{ user['email'] }}</td>
+      </tr>
+
+      <tr>
+	<th>Role</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  {% if is_admin %}
+          {% for role in constants.ROLES %}
+          {% set checked = role == user['role'] and 'checked' or '' %}
+          <input type='radio' name='role' value="{{ role }}" {{ checked }}>
+	  {{ role }}
+	  {% end %}
+	  {% end %}
+	</td>
+      </tr>
+
+      <tr>
+	<th>Full name</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  <input type="text" name="fullname" size="40"
+		 value="{{ user.get('fullname') or ''}}">
+	</td>
+	<td class="description">
+	  In the form "Jane U Doe".
+	</td>
+      </tr>
+
+      <tr>
+	<th>University</th>
+	<td></td>
+	<td>
+	  <input type="text" name="university" size="40"
+		 value="{{ user.get('university') or '' }}">
+	</td>
+	<td class="description">
+	  Your main affiliation: University, college, school, company, etc.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Department</th>
+	<td></td>
+	<td>
+	  <input type="text" name="department" size="40"
+		 value="{{ user.get('department') or '' }}">
+	</td>
+	<td class="description">
+	  Your department or section of the university or company.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Country</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  <select name="country">
+	    {% for country in countries %}
+	    {% if country == user.get('country') %}
+	    <option selected>{{ country }}</option>
+	    {% else %}
+	    <option>{{ country }}</option>
+	    {% end %}
+	    {% end %}
+	  </select>
+	</td>
+	<td class="description">
+	</td>
+      </tr>
+
+      {% if is_admin %}
+      <tr>
+	<th>Services</th>
+	<td></td>
+	<td>
+	  <table>
+	    {% for service in services %}
+	    <tr>
+	      {% set checked = service['name'] in user['services'] and 'checked' or '' %}
+	      <td>
+		<input type="checkbox" name="service"
+		       value="{{ service['name'] }}" {{ checked }}>
+	      </td>
+	      <td>
+		{% module Access(service) %}
+	      </td>
+	      <td>
+		{{ service['name'] }}
+	      </td>
+	    </tr>
+	    {% end %}
+	  </table>
+	</td>
+      </tr>
+      {% end %}
+
+      <tr>
+	<th></th>
+	<td></td>
+	<td>
+	  {% module Submit('save') %}
+	</td>
+      </tr>
+    </table>
+
+  </fieldset>
+</form>
+
+{% end %}

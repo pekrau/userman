@@ -1,0 +1,83 @@
+{# Home page. #}
+
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if current_user %}
+
+<form action="{{ reverse_url('logout') }}" method="POST">
+  {% module xsrf_form_html() %}
+  <fieldset>
+    <legend>Logout from account {{ current_user['email'] }}</legend>
+    {% module Submit('logout') %}
+  </fieldset>
+</form>
+
+{% else %}
+
+<form action="{{ reverse_url('login') }}" method="POST">
+  {% module xsrf_form_html() %}
+
+  <fieldset>
+
+    <legend>Login to an existing account</legend>
+
+    <table class="fields">
+      <tr>
+	<th>Email</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td><input type="email" name="email" size="40"></td>
+      </tr>
+
+      <tr>
+	<th>Password</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td><input type="password" name="password"></td>
+      </tr>
+
+      <tr>
+	<th></th>
+	<td></td>
+	<td>
+	  {% if next %}
+	  <input type="hidden" name="next" value="{{ next }}">
+	  {% end %}
+	  {% module Submit('login') %}
+	</td>
+      </tr>
+    </table>
+
+  </fieldset>
+
+</form>
+
+{% end %}
+
+{% if not current_user %}
+
+<h3>
+  {% module Icon('action') %}
+  <a href="{{ reverse_url('user_create') }}">
+    Create a new user account.
+  </a>
+</h3>
+
+<h3>
+  {% module Icon('action') %}
+  <a href="{{ reverse_url('user_activate') }}">
+    Activate a user account (after approval or password reset).
+  </a>
+</h3>
+
+
+<h3>
+  {% module Icon('action') %}
+  <a href="{{ reverse_url('user_reset') }}">
+    Reset the password of an account.
+  </a>
+</h3>
+
+{% end %}
+
+{% end %}

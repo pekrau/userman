@@ -1,0 +1,101 @@
+{# Service create page. #}
+
+{% extends "base.html" %}
+
+{% block head_title %}
+Create Service
+{% end %}
+
+{% block title %}
+{% module Icon('create') %}
+Create
+{% module Icon('service') %}
+Service
+{% end %}
+
+{% block content %}
+
+<form action="{{ reverse_url('service_create') }}"
+      method="POST">
+  {% module xsrf_form_html() %}
+
+  <fieldset>
+
+    <legend>Create a new service</legend>
+
+    <table class="fields">
+      <tr>
+	<th>Name</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td><input type="text" name="name"></td>
+	<td class="description">
+	  The unique name of the service.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Description</th>
+	<td></td>
+	<td>
+	  <textarea name="description">
+	  </textarea>
+	</td>
+	<td class="description">
+	  A brief description of the service.
+	</td>
+      </tr>
+
+      <tr>
+	<th>URL</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td><input type="url" name="href" size="40"></td>
+	<td class="description">
+	  The URL of the home page of the service.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Status</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  <input type="radio" name="status" value="active" checked>
+	  {% module Icon('active', label=True) %}
+	  <input type="radio" name="status" value="blocked">
+	  {% module Icon('blocked', label=True) %}
+	</td>
+	<td class="description">
+	  The status of the service.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Access</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  <input type="radio" name="public" value="true">
+	  {% module Icon('public', label=True) %}
+	  <input type="radio" name="public" value="false" checked>
+	  {% module Icon('private', label=True) %}
+	</td>
+	<td class="description">
+	  The access of the service. Public means that anyone can access it.
+	  Private means that only members of the team with the same name as
+	  the service are allowed to access it.
+	</td>
+      </tr>
+
+      <tr>
+	<th></th>
+	<td></td>
+	<td>
+	  {% module Submit('create') %}
+	</td>
+      </tr>
+
+    </table>
+
+  </fieldset>
+
+</form>
+
+{% end %}

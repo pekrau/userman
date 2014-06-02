@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block head_title %}Software versions{% end %}
+
+{% block title %}Software versions{% end %}
+
+{% block content %}
+
+  <table>
+    <tr>
+      <th>Software</th>
+      <th>Version</th>
+    </tr>
+
+    {% for s, v in versions %}
+    <tr>
+      <td>{{ s }}</td>
+      <td>{{ v }}</td>
+    </tr>
+    {% end %}
+
+  </table>
+
+{% end %}

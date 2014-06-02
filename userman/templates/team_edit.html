@@ -1,0 +1,125 @@
+{# Team edit page. #}
+
+{% extends "base.html" %}
+
+{% block head_title %}
+Edit Team
+{% end %}
+
+{% block title %}
+{% module Icon('edit', label=True) %}
+{% module Icon('team', label=True) %}
+{% end %}
+
+{% block actions %}
+<form action="{{ reverse_url('team', team['name']) }}">
+  {% module Submit('cancel') %}
+</form>
+{% end %}
+
+{% block content %}
+
+<form action="{{ reverse_url('team_edit', team['name']) }}"
+      method="POST">
+  {% module xsrf_form_html() %}
+
+  <fieldset>
+
+    <legend>Edit team information</legend>
+
+    <table class="fields">
+      <tr>
+	<th>Name</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>{{ team['name'] }}</td>
+	<td class="description">
+	  The unique name of the team.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Description</th>
+	<td></td>
+	<td>
+	  <textarea name="description">
+	    {{ team.get('description') or '' }}
+	  </textarea>
+	</td>
+	<td class="description">
+	  A brief description of the team.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Status</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  {% for status in [constants.ACTIVE, constants.BLOCKED] %}
+	  {% set checked = team['status'] == status and 'checked' or '' %}
+	  <input type="radio" name="status" value="{{ status }}" {{ checked }}>
+	  {% module Icon(status, label=True) %}
+	  {% end %}
+	</td>
+	<td class="description">
+	  The status of the team.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Access</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  {% set checked = team.get('public') and 'checked' or '' %}
+	  <input type="radio" name="public" value="true" {{ checked }}>
+	  {% module Icon('public', label=True) %}
+	  {% set checked = not team.get('public') and 'checked' or '' %}
+	  <input type="radio" name="public" value="false" {{ checked }}>
+	  {% module Icon('private', label=True) %}
+	</td>
+	<td class="description">
+	  The access of the team. Public means that any user can join it.
+	  Private means that the team leader includes a user.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Leaders</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  <textarea name='leaders'>
+	    {{ '\n'.join(leaders) }}
+	  </textarea>
+	</td>
+	<td class="description">
+	  The leaders of the team, given by email address.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Members</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  <textarea name='members'>
+	    {{ '\n'.join(members) }}
+	  </textarea>
+	</td>
+	<td class="description">
+	  The members of the team, given by email address.
+	</td>
+      </tr>
+
+      <tr>
+	<th></th>
+	<td></td>
+	<td>
+	  {% module Submit('save') %}
+	</td>
+      </tr>
+
+    </table>
+
+  </fieldset>
+
+</form>
+
+{% end %}

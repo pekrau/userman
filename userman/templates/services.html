@@ -1,0 +1,43 @@
+{# Services page. #}
+
+{% extends "base.html" %}
+
+{% block head_title %}
+Services
+{% end %}
+
+{% block title %}
+{% module Icon('service', title='Services', label=True) %}
+{% end %}
+
+{% block content %}
+
+<table class="list">
+
+  <tr>
+    <th>Name</th>
+    <th>URL</th>
+    <th>Status</th>
+    <th>Access</th>
+    <th>Created</th>
+    <th>Modified</th>
+  </tr>
+
+  {% for service in services %}
+  <tr>
+    <td>
+      <a href="{{ reverse_url('service', service['name']) }}">
+	{{ service['name'] }}
+      </a>
+    </td>
+    <td><a href="{{ service['href'] }}">{{ service['href'] }}</a></td>
+    <td>{% module Icon(service['status'], label=True) %}</td>
+    <td>{% module Access(service, label=True) %}</td>
+    <td class="localtime">{{ service['created'] }}</td>
+    <td class="localtime">{{ service['modified'] }}</td>
+  </tr>
+  {% end %}
+
+</table>
+
+{% end %}

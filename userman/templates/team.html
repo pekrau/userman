@@ -1,0 +1,104 @@
+{# Team page. #}
+
+{% extends "base.html" %}
+
+{% block head_title %}
+Team {{ team['name'] }}
+{% end %}
+
+{% block title %}
+{% module Icon('team', label=True) %}
+{{ team['name'] }}
+{% end %}
+
+{% block actions %}
+{% if is_member %}
+<form action="{{ reverse_url('team_leave', team['name']) }}" method="POST">
+  {% module Submit('leave') %}
+</form>
+{% else %}
+<form action="{{ reverse_url('team_join', team['name']) }}" method="POST">
+  {% module Submit('join') %}
+</form>
+{% end %}
+{% if is_leader %}
+  <form action="{{ reverse_url('team_edit', team['name']) }}">
+    {% module xsrf_form_html() %}
+    {% module Submit('edit') %}
+  </form>
+  {% if team['status'] == constants.ACTIVE %}
+  <form action="{{ reverse_url('team_block', team['name']) }}" method="POST">
+    {% module xsrf_form_html() %}
+    {% module Submit('block') %}
+  </form>
+  {% elif team['status'] == constants.BLOCKED %}
+  <form action="{{ reverse_url('team_unblock', team['name']) }}" method="POST">
+    {% module xsrf_form_html() %}
+    {% module Submit('activate', title="Unblock") %}
+  </form>
+  {% end %}
+{% end %}
+{% end %}
+
+{% block content %}
+
+<table class="fields">
+
+  <tr>
+    <th>Name</th>
+    <td>{{ team['name'] }}</td>
+  </tr>
+
+  <tr>
+    <th>Description</th>
+    <td>{{ team.get('description') or '' }}</td>
+  </tr>
+
+  <tr>
+    <th>Status</th>
+    <td>{% module Icon(team['status'], label=True) %}</td>
+  </tr>
+
+  <tr>
+    <th>Access</th>
+    <td>{% module Access(team, label=True) %}</td>
+  </tr>
+
+  <tr>
+    <th>Leaders</th>
+    <td>
+      {% for leader in leaders %}
+      {% module User(leader) %}
+      {% end %}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Members</th>
+    <td>
+      {% for member in members %}
+      {% module User(member) %}
+      {% end %}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Created</th>
+    <td class="localtime">{{ team['created'] }}</td>
+  </tr>
+
+  <tr>
+    <th>Modified</th>
+    <td class="localtime">{{ team['modified'] }}</td>
+  </tr>
+
+  <tr>
+    <th>Event log</th>
+    <td>
+      {% include 'log.html' %}
+    </td>
+  </tr>
+
+</table>
+
+{% end %}

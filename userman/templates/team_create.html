@@ -1,0 +1,91 @@
+{# Team create page. #}
+
+{% extends "base.html" %}
+
+{% block head_title %}
+Create Team
+{% end %}
+
+{% block title %}
+{% module Icon('create') %}
+Create
+{% module Icon('team') %}
+Team
+{% end %}
+
+{% block content %}
+
+<form action="{{ reverse_url('team_create') }}"
+      method="POST">
+  {% module xsrf_form_html() %}
+
+  <fieldset>
+
+    <legend>Create a new team</legend>
+
+    <table class="fields">
+      <tr>
+	<th>Name</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td><input type="name" name="name"></td>
+	<td class="description">
+	  The unique name of the team.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Description</th>
+	<td></td>
+	<td>
+	  <textarea name="description">
+	  </textarea>
+	</td>
+	<td class="description">
+	  A brief description of the team.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Status</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  <input type="radio" name="status" value="active" checked>
+	  {% module Icon('active', label=True) %}
+	  <input type="radio" name="status" value="blocked">
+	  {% module Icon('blocked', label=True) %}
+	</td>
+	<td class="description">
+	  The status of the team.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Access</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td>
+	  <input type="radio" name="public" value="true">
+	  {% module Icon('public', label=True) %}
+	  <input type="radio" name="public" value="false" checked>
+	  {% module Icon('private', label=True) %}
+	</td>
+	<td class="description">
+	  The access of the team. Public means that any user can join it.
+	  Private means that the team leader includes a user.
+	</td>
+      </tr>
+
+      <tr>
+	<th></th>
+	<td></td>
+	<td>
+	  {% module Submit('create') %}
+	</td>
+      </tr>
+
+    </table>
+
+  </fieldset>
+
+</form>
+
+{% end %}

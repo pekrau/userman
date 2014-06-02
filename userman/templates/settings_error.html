@@ -1,0 +1,25 @@
+{# Home page to display settings errors. #}
+
+{% extends "base.html" %}
+
+{% block head_title %}Error in Userman settings{% end %}
+{% block title %}Error in Userman settings{% end %}
+
+{% block content %}
+
+<div class="error">
+
+<h2>Error in settings</h2>
+
+<p>
+This site is not functional; please inform the administrator.
+</p>
+
+<div class="code">
+Error:
+{{ message }}
+</div>
+
+</div>
+
+{% end %}

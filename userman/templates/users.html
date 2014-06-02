@@ -1,0 +1,42 @@
+{# Users page. #}
+
+{% extends "base.html" %}
+
+{% block head_title %}
+Users
+{% end %}
+
+{% block title %}
+{% module Icon('user') %}
+Users
+{% end %}
+
+{% block content %}
+
+<table class="list">
+
+  <tr>
+    <th>Email</th>
+    <th>Role</th>
+    <th>Status</th>
+    <th>Name</th>
+    <th>Created</th>
+    <th>Modified</th>
+  </tr>
+
+  {% for user in users %}
+  <tr>
+    <td>
+      <a href="{{ reverse_url('user', user['email']) }}">{{ user['email'] }}</a>
+    </td>
+    <td>{{ user['role'] }}</td>
+    <td>{% module Icon(user['status'], label=True) %}</td>
+    <td>{{ user.get('fullname') or '' }}</td>
+    <td class="localtime">{{ user['created'] }}</td>
+    <td class="localtime">{{ user['modified'] }}</td>
+  </tr>
+  {% end %}
+
+</table>
+
+{% end %}

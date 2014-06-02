@@ -1,0 +1,147 @@
+/* Userman standard CSS */
+
+* {font-family: Arial, Helvetica, sans-serif;
+   font-size: small; }
+
+h1 {font-size: x-large; }
+h2 {font-size: large; }
+h3 {font-size: medium; }
+
+nav {width: 5%;
+     clear: both;
+     float: left;
+    }
+
+aside {width: 15%;
+       float: right;
+      }
+
+footer {clear: both;
+	padding-top: 0.5em;
+	border-top-style: solid;
+	border-top-color: lightgray;
+	border-top-width: 2px;
+       }
+
+a {text-decoration: none;
+   font-weight: bold; }
+
+h3 a {font-size: medium; }
+
+dl {margin-top: 0; }
+dt {font-style: italic; }
+
+form {padding: 0;
+      margin: 0;
+     }
+
+button {padding-top: 0;
+	padding-bottom: 0;
+       }
+
+button img {vertical-align: middle; }
+
+button.invisible {border:none;
+		  background-color:transparent;
+		 }
+
+textarea {width: 40em;
+	  height: 4em;}
+
+.nobr {white-space: nowrap; }
+.pre  {white-space: pre; }
+
+.bold {font-weight: bold; }
+
+.number {font-family: Courier, monospace;
+	 text-align: right;
+	}
+
+.code {font-family: Courier, monospace;
+       white-space: pre;
+      }
+
+.border {border-style: solid;
+	 border-color: red;
+	 border-width: 1px;
+	}
+
+.error {color: red; }
+.description {font-style: italic; }
+
+.top {vertical-align: top; }
+.bottom {vertical-align: bottom; }
+
+.title {font-size: x-large;
+	font-weight: bold;
+	padding-top: 0.25em;
+	padding-bottom: 0.25em;
+	}
+
+img.icon {vertical-align: middle; }
+
+table.header {float: left; }
+
+p.description {font-style: normal;
+	       text-indent: 1em;
+	       margin-top: 0;
+	       margin-bottom: 0.5em;
+	       }
+
+div.menu1 { margin-left: 1em; }
+div.left {float: left; }
+div.right {float: right; }
+
+div.content {width: 75%;
+	     float: left;
+	     padding-left: 1em;
+	     margin-left: 1em;
+	    }
+
+td.spacer1 {padding-right: 1em; }
+td.spacer3 {padding-right: 3em; }
+
+span.spacer {padding-left: 4em; }
+
+p.text {font-size: medium; }
+
+aside button {text-align: left; }
+
+button:disabled img {opacity:0.4;
+		     filter:alpha(opacity=40);
+		    }
+
+table.headless tr:nth-child(even) {background-color: linen; }
+
+table.list tr:nth-child(2n+3) {background-color: linen; }
+
+table.list th {text-align: left;
+	       padding-right: 1em;
+	       border-bottom-style: solid;
+	       border-bottom-color: gray;
+	       border-bottom-width: 2px;
+	      }
+
+table.list tr.list th {text-align: left;
+		       padding-right: 1em;
+		      }
+
+table.list td {padding-right: 1em; }
+
+table.fields {padding-left: 1em; }
+
+table.fields th {text-align: right;
+		 vertical-align: top;
+		 padding-right: 0.5em;
+		}
+
+table.fields td {text-align: left;
+		 vertical-align: top;
+		 padding-right: 0.5em;
+		}
+
+table.fields td * {vertical-align: top; }
+
+table.fields tr td.spacer {padding-right: 3em; }
+
+table.logs tr th {text-align: left; }

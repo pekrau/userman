@@ -1,0 +1,6 @@
+include README.md
+recursive-include userman/designs *
+recursive-include userman/static *
+recursive-include userman/templates *
+recursive-include userman/messages *
+include userman/example.yaml

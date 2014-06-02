@@ -1,0 +1,143 @@
+" Userman: Various utility functions. "
+
+import uuid
+import hashlib
+import datetime
+import unicodedata
+
+import tornado.web
+import couchdb
+
+from userman import constants
+from userman import settings
+
+
+def check_settings():
+    """Raise KeyError if a settings variable is missing.
+    Raise ValueError if the settings variable value is invalid."""
+    for key in ['DB_SERVER', 'DB_DATABASE', 'COOKIE_SECRET', 'HASH_SALT']:
+        if key not in settings:
+            raise KeyError("no '{0}' in settings".format(key))
+        if not settings[key]:
+            raise ValueError("setting {0} has invalid value".format(key))
+    if len(settings['COOKIE_SECRET']) < 10:
+        raise ValueError('setting COOKIE_SECRET too short')
+
+def get_db():
+    "Return the handle for the CouchDB database."
+    try:
+        return couchdb.Server(settings['DB_SERVER'])[settings['DB_DATABASE']]
+    except couchdb.http.ResourceNotFound:
+        raise KeyError("CouchDB database '%s' does not exist" %
+                       settings['DB_DATABASE'])
+
+def get_iuid():
+    "Return a unique instance identifier."
+    return uuid.uuid4().hex
+
+def timestamp(days=None):
+    """Current date and time (UTC) in ISO format, with millisecond precision.
+    Add the specified offset in days, if given."""
+    instant = datetime.datetime.utcnow()
+    if days:
+        instant += datetime.timedelta(days=days)
+    instant = instant.isoformat()
+    return instant[:-9] + "%06.3f" % float(instant[-9:]) + "Z"
+
+def to_ascii(value):
+    "Convert any non-ASCII character to its closest equivalent."
+    if not isinstance(value, unicode):
+        value = unicode(value, 'utf-8')
+    return unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+
+def to_bool(value):
+    " Convert the value into a boolean, interpreting various string values."
+    if not value: return False
+    value = value.lower()
+    return value in ['true', 'yes'] or value[0] in ['t', 'y']
+
+def hashed_password(password, check=True):
+    "Hash the password. Raise ValueError if the quality is insufficient."
+    if check:
+        if len(password) < 6:
+            raise ValueError('password shorter than 6 characters')
+    m = hashlib.sha384(settings['HASH_SALT'])
+    m.update(password)
+    return m.hexdigest()
+
+def cleanup_doc(doc):
+    """Make a dictionary of the database document,
+    removing '_rev' and changing '_id' to 'iuid'."""
+    result = dict(doc)
+    del result['_rev']
+    try:
+        del result['password']
+    except KeyError:
+        pass
+    result['iuid'] = result.pop('_id')
+    return result
+
+def log(db, doc, changed={}, deleted={}, current_user=None):
+    "Create a log entry for the given document."
+    entry = dict(_id=get_iuid(),
+                 doc=doc['_id'],
+                 doctype=doc[constants.DB_DOCTYPE],
+                 changed=changed,
+                 deleted=deleted,
+                 timestamp=timestamp())
+    entry[constants.DB_DOCTYPE] = constants.LOG
+    try:
+        if current_user:
+            entry['operator'] = current_user['email']
+    except KeyError:
+        pass
+    db.save(entry)
+
+def cmp_modified(i, j):
+    "Compare the two documents by their 'modified' values."
+    return cmp(i['timestamp'], j['timestamp'])
+
+def cmp_email(u, v):
+    "Compare the two user documents by their 'email' values."
+    return cmp(u['email'], v['email'])
+
+def cmp_name(u, v):
+    "Compare the two user documents by their 'name' values."
+    return cmp(u['name'], v['name'])
+
+
+class BasePatch(object):
+    """Run through all documents in the database and patch the relevant ones.
+    Abstract base class."""
+
+    def __init__(self, db):
+        self.db = db
+
+    def count_relevant(self):
+        "Return the number of documents that match the relevance criterion."
+        count = 0
+        for key in self.db:
+            if self.is_relevant(self.db[key]):
+                count += 1
+        return count
+
+    def is_relevant(self, doc):
+        "Is the relevant document relevant for patch?"
+        return constants.DB_DOCTYPE in doc
+
+    def patch_all(self):
+        """Run through all documents and patch the relevant ones.
+        Return the number of documents patched."""
+        count = 0
+        for key in self.db:
+            doc = self.db[key]
+            if self.is_relevant(doc):
+                if self.patch_doc(doc):
+                    self.db.save(doc)
+                    count += 1
+        return count
+
+    def patch_doc(self, doc):
+        """Patch the document, which is assumed relevant.
+        Return True if changed."""
+        raise NotImplementedError

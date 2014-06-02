@@ -1,0 +1,165 @@
+{# User page. #}
+
+{% extends "base.html" %}
+
+{% block head_title %}
+User {{ user['email'] }}
+{% end %}
+
+{% block title %}
+{% module Icon('user', label=True) %}
+{{ user['email'] }}
+{% end %}
+
+{% block actions %}
+<form action="{{ reverse_url('user_edit', user['email']) }}">
+  {% module Submit('edit') %}
+</form>
+{% if user['email'] == current_user['email'] %}
+<form action="{{ reverse_url('logout') }}" method="POST">
+  {% module xsrf_form_html() %}
+  {% module Submit('logout') %}
+</form>
+{% end %}
+{% if is_admin %}
+  {% if user['status'] == constants.PENDING %}
+  <form action="{{ reverse_url('user_approve', user['email']) }}" method="POST">
+    {% module xsrf_form_html() %}
+    {% module Submit('approve') %}
+  </form>
+  {% elif user['status'] == constants.ACTIVE and user['role'] != constants.ADMIN %}
+  <form action="{{ reverse_url('user_block', user['email']) }}" method="POST">
+    {% module xsrf_form_html() %}
+    {% module Submit('block') %}
+  </form>
+  {% elif user['status'] == constants.BLOCKED %}
+  <form action="{{ reverse_url('user_unblock', user['email']) }}" method="POST">
+    {% module xsrf_form_html() %}
+    {% module Submit('activate', title="Unblock") %}
+  </form>
+  {% end %}
+{% end %}
+{% end %}
+
+{% block content %}
+
+<table class="fields">
+
+  <tr>
+    <th>Email</th>
+    <td>{{ user['email'] }}</td>
+  </tr>
+
+  <tr>
+    <th>Role</th>
+    <td>{{ user['role'] }}</td>
+  </tr>
+
+  <tr>
+    <th>Status</th>
+    <td>{% module Icon(user['status'], label=True) %}</td>
+  </tr>
+
+  <tr>
+    <th>Full name</th>
+    <td>{{ user.get('fullname') or '' }}</td>
+  </tr>
+
+  <tr>
+    <th>University</th>
+    <td>{{ user.get('university') or '' }}</td>
+  </tr>
+
+  <tr>
+    <th>Department</th>
+    <td>{{ user.get('department') or '' }}</td>
+  </tr>
+
+  <tr>
+    <th>Country</th>
+    <td>{{ user.get('country') or '' }}</td>
+  </tr>
+
+  <tr>
+    <th>Services</th>
+    <td>
+      <table class="list">
+	<tr class="list">
+	  <th>Name</th>
+	  <th>URL</th>
+	  <th>
+	    {% module Icon('apikey', title='API key') %}
+	    API key
+	  </th>
+	  <th>Modified</th>
+	</tr>
+	{% for service in services %}
+	<tr>
+	  <td>
+	    {% module Service(service) %}
+	  </td>
+	  <td>
+	    <a href="{{ reverse_url('service', service['href']) }}">
+	      {{ service['href'] }}
+	    </a>
+	  </td>
+	  {% set apikey = user['apikeys'].get(service['name']) %}
+	  {% if apikey %}
+	  <td class="code">{{ apikey['value'] }}</td>
+	  <td class="localtime">{{ apikey['modified'] }}</td>
+	  {% else %}
+	  <td>-</td>
+	  <td>-</td>
+	  {% end %}
+	  <td>
+	    <form action="{{ reverse_url('user_apikey', user['email']) }}"
+		  method="POST">
+	      {% module xsrf_form_html() %}
+	      <input type="hidden" name="service" value="{{ service['name'] }}">
+	      {% module Submit('apikey_new', title='New API key') %}
+	    </form>
+	  </td>
+	</tr>
+	{% end %}
+      </table>
+    </td>
+  </tr>
+
+  <tr>
+    <th>Teams (leader of)</th>
+    <td>
+      {% for team in leading %}
+      {% module Team(team) %}
+      {% end %}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Teams (member of)</th>
+    <td>
+      {% for team in teams %}
+      {% module Team(team) %}
+      {% end %}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Created</th>
+    <td class="localtime">{{ user['created'] }}</td>
+  </tr>
+
+  <tr>
+    <th>Modified</th>
+    <td class="localtime">{{ user['modified'] }}</td>
+  </tr>
+
+  <tr>
+    <th>Event log</th>
+    <td>
+      {% include 'log.html' %}
+    </td>
+  </tr>
+
+</table>
+
+{% end %}

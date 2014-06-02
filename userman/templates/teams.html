@@ -1,0 +1,49 @@
+{# Teams page. #}
+
+{% extends "base.html" %}
+
+{% block head_title %}
+Teams
+{% end %}
+
+{% block title %}
+{% module Icon('team', title='Teams', label=True) %}
+{% end %}
+
+{% block content %}
+
+<table class="list">
+
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Status</th>
+    <th>Access</th>
+    <th>Member</th>
+    <th>Created</th>
+    <th>Modified</th>
+  </tr>
+
+  {% for team in teams %}
+  <tr>
+    <td>
+      <a href="{{ reverse_url('team', team['name']) }}">
+	{{ team['name'] }}
+      </a>
+    </td>
+    <td>{{ team.get('description') or '' }}</td>
+    <td>{% module Icon(team['status'], label=True) %}</td>
+    <td>{% module Access(team, label=True) %}</td>
+    <td>
+      {% if team['is_member'] %}
+      {% module Icon('team') %}
+      {% end %}
+    </td>
+    <td class="localtime">{{ team['created'] }}</td>
+    <td class="localtime">{{ team['modified'] }}</td>
+  </tr>
+  {% end %}
+
+</table>
+
+{% end %}

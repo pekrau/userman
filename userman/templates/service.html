@@ -1,0 +1,84 @@
+{# Service page. #}
+
+{% extends "base.html" %}
+
+{% block head_title %}
+Service {{ service['name'] }}
+{% end %}
+
+{% block title %}
+{% module Icon('service', label=True) %}
+{{ service['name'] }}
+{% end %}
+
+{% block actions %}
+{% if is_admin %}
+<form action="{{ reverse_url('service_edit', service['name']) }}">
+  {% module xsrf_form_html() %}
+  {% module Submit('edit') %}
+</form>
+  {% if service['status'] == constants.ACTIVE %}
+  <form action="{{ reverse_url('service_block', service['name']) }}" method="POST">
+    {% module xsrf_form_html() %}
+    {% module Submit('block') %}
+  </form>
+  {% elif service['status'] == constants.BLOCKED %}
+  <form action="{{ reverse_url('service_unblock', service['name']) }}" method="POST">
+    {% module xsrf_form_html() %}
+    {% module Submit('activate', title="Unblock") %}
+  </form>
+  {% end %}
+{% end %}
+{% end %}
+
+{% block content %}
+
+<table class="fields">
+
+  <tr>
+    <th>Name</th>
+    <td>{{ service['name'] }}</td>
+  </tr>
+
+  <tr>
+    <th>Description</th>
+    <td>{{ service.get('description') or '' }}</td>
+  </tr>
+
+  <tr>
+    <th>URL</th>
+    <td>
+      <a href="{{ service['href'] }}">{{ service['href'] }}</a>
+    </td>
+  </tr>
+
+  <tr>
+    <th>Status</th>
+    <td>{% module Icon(service['status'], label=True) %}</td>
+  </tr>
+
+  <tr>
+    <th>Access</th>
+    <td>{% module Access(service, label=True) %}</td>
+  </tr>
+
+  <tr>
+    <th>Created</th>
+    <td class="localtime">{{ service['created'] }}</td>
+  </tr>
+
+  <tr>
+    <th>Modified</th>
+    <td class="localtime">{{ service['modified'] }}</td>
+  </tr>
+
+  <tr>
+    <th>Event log</th>
+    <td>
+      {% include 'log.html' %}
+    </td>
+  </tr>
+
+</table>
+
+{% end %}

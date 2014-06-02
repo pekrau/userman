@@ -1,0 +1,6 @@
+*.yaml
+*.pyc
+*~
+userman.egg-info
+dist
+userman/dump.tar*
