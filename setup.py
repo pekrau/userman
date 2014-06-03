@@ -2,25 +2,21 @@
 
 import os
 from setuptools import setup
-from distutils.core import setup
 
 os.system("pandoc -o README.txt -f markdown -t rst README.md")
 
 setup(name='userman',
       version='14.5',
       description='Simple account handling system for use with web services.',
+      license='MIT',
       author='Per Kraulis',
       author_email='per.kraulis@scilifelab.se',
-      url='http://tools.scilifelab.se/',
+      url='https://github.com/pekrau/userman',
       packages=['userman'],
-      package_data={'userman': ['designs',
-                                'static'
-                                'templates',
-                                'messages',
-                                'example.yaml']},
-      install_requires=['tornado',
-                        'couchdb',
-                        'pyyaml',
-                        'pycountry',
-                        'requests'],
+      include_package_data=True,
+      install_requires=['tornado>=3.2',
+                        'couchdb>=0.8',
+                        'pyyaml>=3.10',
+                        'pycountry>=1.5',
+                        'requests>=2.2'],
      )
