@@ -4,7 +4,7 @@ import os
 from setuptools import setup
 from distutils.core import setup
 
-os.system("pandoc -o README.txt -t rst README.md")
+os.system("pandoc -o README.txt -f markdown -t rst README.md")
 
 setup(name='userman',
       version='14.5',
@@ -18,9 +18,9 @@ setup(name='userman',
                                 'templates',
                                 'messages',
                                 'example.yaml']},
-      requires=['tornado',
-                'couchdb',
-                'pyyaml',
-                'pycountry',
-                'requests'],
+      install_requires=['tornado',
+                        'couchdb',
+                        'pyyaml',
+                        'pycountry',
+                        'requests'],
      )

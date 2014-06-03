@@ -88,8 +88,7 @@ User {{ user['email'] }}
 	  <th>Name</th>
 	  <th>URL</th>
 	  <th>
-	    {% module Icon('apikey', title='API key') %}
-	    API key
+	    {% module Icon('apikey', title='API key', label=True) %}
 	  </th>
 	  <th>Modified</th>
 	</tr>
@@ -116,7 +115,8 @@ User {{ user['email'] }}
 		  method="POST">
 	      {% module xsrf_form_html() %}
 	      <input type="hidden" name="service" value="{{ service['name'] }}">
-	      {% module Submit('apikey_new', title='New API key') %}
+	      {% module Submit('apikey_new', title='New API key',
+	      onclick="return confirm('API key must also be updated for the user in the service.');") %}
 	    </form>
 	  </td>
 	</tr>

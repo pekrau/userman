@@ -9,8 +9,6 @@
 import os
 import getpass
 
-import couchdb
-
 from userman import settings
 from userman import constants
 from userman import utils
