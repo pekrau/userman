@@ -38,7 +38,7 @@ class UserSaver(DocumentSaver):
 
     def convert_services(self, value):
         "Set the list of services the user may access."
-        old_services = set(self.doc['services'])
+        old_services = set(self.doc.get('services', []))
         for service in value:
             if service not in old_services:
                 self.set_apikey(service)
@@ -46,7 +46,7 @@ class UserSaver(DocumentSaver):
         
     def set_apikey(self, servicename):
         "Reset the API key for the service of the given name."
-        apikeys = self.doc['apikeys'].copy()
+        apikeys = self.doc.get('apikeys', {}).copy()
         apikeys[servicename] = dict(value=utils.get_iuid(),
                                     modified=utils.timestamp())
         self['apikeys'] = apikeys
