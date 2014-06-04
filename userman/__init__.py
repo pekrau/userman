@@ -1,19 +1,14 @@
 """ Userman: Simple account handling system for use with web services.
 
-This implementation uses Tornado and CouchDB.
-
-Requires:
-couchdb server 1.0.1
-couchdb module 0.8
-tornado 3.2
-pyyaml 3.10
-pycountry 1.5
+This implementation uses Tornado (3.2 or later) and CouchDB (1.0.1 or later).
 """
 
 import os
 import socket
-
 import yaml
+
+import constants
+__version__ = constants.VERSION
 
 def readfile(filename):
     filepath = os.path.join(os.path.dirname(__file__), filename)

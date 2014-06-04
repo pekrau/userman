@@ -59,18 +59,22 @@ class RequestHandler(tornado.web.RequestHandler):
             self._user = user
         return self._user
 
-    def get_user(self, email):
-        "Get the user document by its email."
+    def get_user(self, email, require_active=False):
+        """Get the user document by its email.
+        Return HTTP 404 if no such user, or blocked if active required."""
+        key = "{0}:{1}".format(constants.USER, email)
         try:
-            key = "{0}:{1}".format(constants.USER, email)
-            return self._cache[key]
+            doc = self._cache[key]
         except KeyError:
             result = list(self.db.view('user/email', include_docs=True)[email])
             if len(result) == 1:
                 doc = result[0].doc
                 self._cache[key] = self._cache[doc.id] = doc
-                return doc
-            raise tornado.web.HTTPError(404, 'no such user')
+            else:
+                raise tornado.web.HTTPError(404, 'no such user')
+        if require_active and doc.get('status') != constants.ACTIVE:
+            raise tornado.web.HTTPError(404, 'blocked user')
+        return doc
 
     def get_service(self, name):
         "Get the service document by its name."

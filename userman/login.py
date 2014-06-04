@@ -23,9 +23,7 @@ class Login(RequestHandler):
         password = self.get_argument('password', '')
         if email and password:
             try:
-                user = self.get_user(email)
-                if user.get('status') != constants.ACTIVE:
-                    raise tornado.web.HTTPError(400)
+                user = self.get_user(email, require_active=True)
             except tornado.web.HTTPError:
                 pass
             else:

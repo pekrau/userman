@@ -84,7 +84,8 @@ handlers = \
      URL(constants.LOGIN_URL, Login, name='login'),
      URL(r'/logout', Logout, name='logout'),
      URL(r'/version', Version, name='version'),
-     URL(r'/api/v1/user', ApiUser, name='api_user'),
+     URL(r'/api/v1/auth/(.+)', ApiAuth, name='api_auth'),
+     URL(r'/api/v1/user/(.+)', ApiUser, name='api_user'),
      URL(r'/api/v1/doc/([a-f0-9]{32})', ApiDoc, name='api_doc'),
      ]
 

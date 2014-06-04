@@ -42,42 +42,52 @@ class ApiDoc(ApiRequestHandler):
             self.send_error(404, reason='no such item')
 
 
-class ApiUser(ApiRequestHandler):
-    """Return the user information for the email, password and service
-    given as JSON-encoded data.
+class ApiAuth(ApiRequestHandler):
+    """Return the user information given the password and service as JSON data.
     Return only the API key for the requested service,
-    and remove the service information.
-    Return HTTP 400 if missing parameter.
-    Return HTTP 401 if wrong user, password or service."""
+    without the service information.
+    Return HTTP 400 if missing parameter or invalid JSON.
+    Return HTTP 401 if wrong password or service.
+    Return HTTP 404 if no such user, or blocked."""
 
-    def post(self):
+    def post(self, email):
+        user = self.get_user(email, require_active=True)
         try:
             data = json.loads(self.request.body)
-            for key in  ['user', 'password', 'service']:
-                if key not in data:
-                    raise KeyError("missing {0} in data".format(key))
         except Exception, msg:
             logging.debug(str(msg))
-            self.send_error(400, reason=str(msg))
-        else:
-            try:
-                user = self.get_user(data['user'])
-            except tornado.web.HTTPError:
-                self.send_error(401, reason='invalid user')
-            else:
-                if user['status'] != constants.ACTIVE:
-                    self.send_error(401, reason='invalid user')
-                elif data['service'] not in user['services']:
-                    self.send_error(401, reason='invalid service')
-                elif user['password'] != utils.hashed_password(data['password'],
-                                                               check=False):
-                    self.send_error(401, reason='invalid password')
-                else:
-                    user = utils.cleanup_doc(user)
-                    try:
-                        apikeys = user.pop('apikeys')
-                        user['apikey'] = apikeys[data['service']]['value']
-                    except KeyError:
-                        user['apikey'] = None
-                    user.pop('services', None)
-                    self.write(user)
+            raise tornado.web.HTTPError(400, reason=str(msg))
+        self.check_password(user, data)
+        try:
+            service = data['service']
+        except KeyError, msg:
+            raise tornado.web.HTTPError(400, reason='service missing')
+        if service not in user['services']:
+            raise tornado.web.HTTPError(401, reason='invalid service')
+        user = utils.cleanup_doc(user)
+        try:
+            apikeys = user.pop('apikeys')
+            user['apikey'] = apikeys[data['service']]['value']
+        except KeyError:
+            user['apikey'] = None
+        user.pop('services', None)
+        self.write(user)
+
+    def check_password(self, user, data):
+        try:
+            password = data['password']
+        except KeyError, msg:
+            raise tornado.web.HTTPError(400, reason='password missing')
+        if utils.hashed_password(password, check=False) != user['password']:
+            raise tornado.web.HTTPError(401, reason='invalid password')
+
+
+class ApiUser(ApiAuth):
+    """Return the user information given the email and service as JSON data.
+    Return only the API key for the requested service,
+    without the service information.
+    Return HTTP 400 if missing parameter or invalid JSON.
+    Return HTTP 404 if wrong service."""
+
+    def check_password(self, user, data):
+        pass
