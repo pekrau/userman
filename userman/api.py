@@ -44,8 +44,8 @@ class ApiDoc(ApiRequestHandler):
 
 class ApiAuth(ApiRequestHandler):
     """Return the user information given the password and service as JSON data.
-    Return only the API key for the requested service,
-    without the service information.
+    Return only the API key for the requested service.
+    Exclude all information about other services.
     Return HTTP 400 if missing parameter or invalid JSON.
     Return HTTP 401 if wrong password or service.
     Return HTTP 404 if no such user, or blocked."""
@@ -67,7 +67,7 @@ class ApiAuth(ApiRequestHandler):
         user = utils.cleanup_doc(user)
         try:
             apikeys = user.pop('apikeys')
-            user['apikey'] = apikeys[data['service']]['value']
+            user['apikey'] = apikeys[service]['value']
         except KeyError:
             user['apikey'] = None
         user.pop('services', None)
@@ -84,8 +84,8 @@ class ApiAuth(ApiRequestHandler):
 
 class ApiUser(ApiAuth):
     """Return the user information given the email and service as JSON data.
-    Return only the API key for the requested service,
-    without the service information.
+    Return only the API key for the requested service.
+    Exclude all information about other services.
     Return HTTP 400 if missing parameter or invalid JSON.
     Return HTTP 404 if wrong service."""
 
