@@ -17,6 +17,7 @@ Users
 
   <tr>
     <th>Email</th>
+    <th>Username</th>
     <th>Role</th>
     <th>Status</th>
     <th>Name</th>
@@ -29,6 +30,7 @@ Users
     <td>
       <a href="{{ reverse_url('user', user['email']) }}">{{ user['email'] }}</a>
     </td>
+    <td>{{ user.get('username') or '-' }}</td>
     <td>{{ user['role'] }}</td>
     <td>{% module Icon(user['status'], label=True) %}</td>
     <td>{{ user.get('fullname') or '' }}</td>

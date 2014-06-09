@@ -24,7 +24,11 @@ class UserSaver(DocumentSaver):
         self['created'] = utils.timestamp()
 
     def check_email(self, value):
-        "Raise ValueError if given email value has wrong format."
+        """Raise ValueError if given email value has wrong format.
+        Raise KeyError if the value conflicts with another."""
+        if not value:
+            raise ValueError('email must be a non-empty value')
+        if value == self.doc.get('email'): return
         if '/' in value:
             raise ValueError("slash '/' disallowed in email")
         parts = value.split('@')
@@ -32,6 +36,24 @@ class UserSaver(DocumentSaver):
             raise ValueError("at-sign '@' not used correcly in email")
         if len(parts[1].split('.')) < 2:
             raise ValueError('invalid domain name part in email')
+        if len(list(self.db.view('user/email')[value])) > 0:
+            raise KeyError("email already in use")
+
+    def check_username(self, value):
+        """Raise ValueError if the given username has wrong format.
+        Raise KeyError if the value conflicts with another."""
+        if not value: return
+        if value == self.doc.get('username'): return
+        if '/' in value:
+            raise ValueError("slash '/' disallowed in username")
+        if '@' in value:
+            raise ValueError("at-sign '@' disallowed in username")
+        if len(list(self.db.view('user/username')[value])) > 0:
+            raise KeyError("username already in use")
+
+    def convert_email(self, value):
+        "Convert email value to lower case."
+        return value.lower()
 
     def convert_password(self, value):
         return utils.hashed_password(value)
@@ -118,6 +140,7 @@ class UserEdit(UserMixin, RequestHandler):
                 if role in constants.ROLES:
                     saver['role'] = role
                 saver['services'] = self.get_arguments('service')
+            saver['username'] = self.get_argument('username', None)
             saver['fullname'] = self.get_argument('fullname')
             saver['department'] = self.get_argument('department', None)
             saver['university'] = self.get_argument('university', None)
@@ -135,16 +158,10 @@ class UserCreate(RequestHandler):
 
     def post(self):
         self.check_xsrf_cookie()
-        email = self.get_argument('email')
-        try:
-            self.get_user(email)
-        except tornado.web.HTTPError:
-            pass
-        else:
-            raise tornado.web.HTTPError(409, 'user account already exists')
         # Some fields initialized by UserSaver
         with UserSaver(rqh=self) as saver:
-            saver['email'] = email
+            saver['email'] = self.get_argument('email')
+            saver['username'] = self.get_argument('username', None)
             saver['role'] = constants.USER
             saver['fullname'] = self.get_argument('fullname')
             saver['department'] = self.get_argument('department', None)
@@ -157,10 +174,10 @@ class UserApprove(RequestHandler):
     "Approve a user account; email the activation code."
 
     @tornado.web.authenticated
-    def post(self, email):
+    def post(self, name):
         self.check_xsrf_cookie()
         self.check_admin()
-        user = self.get_user(email)
+        user = self.get_user(name)
         if user['status'] != constants.PENDING:
             raise tornado.web.HTTPError(409, 'account not pending')
         with UserSaver(doc=user, rqh=self) as saver:
@@ -181,10 +198,10 @@ class UserBlock(RequestHandler):
     "Block a user account."
 
     @tornado.web.authenticated
-    def post(self, email):
+    def post(self, name):
         self.check_xsrf_cookie()
         self.check_admin()
-        user = self.get_user(email)
+        user = self.get_user(name)
         if user['status'] != constants.BLOCKED:
             if user['role'] == constants.ADMIN:
                 raise tornado.web.HTTPError(409, 'cannot block admin account')
@@ -197,10 +214,10 @@ class UserUnblock(RequestHandler):
     "Unblock a user account."
 
     @tornado.web.authenticated
-    def post(self, email):
+    def post(self, name):
         self.check_xsrf_cookie()
         self.check_admin()
-        user = self.get_user(email)
+        user = self.get_user(name)
         if user['status'] != constants.ACTIVE:
             with UserSaver(doc=user, rqh=self) as saver:
                 saver['status'] = constants.ACTIVE
@@ -218,8 +235,8 @@ class UserActivate(RequestHandler):
 
     def post(self):
         self.check_xsrf_cookie()
-        email = self.get_argument('email', '')
-        activation_code = self.get_argument('activation_code', '')
+        email = self.get_argument('email', None)
+        activation_code = self.get_argument('activation_code', None)
         try:
             if not email:
                 raise ValueError('missing email')
@@ -285,9 +302,9 @@ class UserApiKey(RequestHandler):
     "Set a new API key for a service for the user."
 
     @tornado.web.authenticated
-    def post(self, email):
+    def post(self, name):
         self.check_xsrf_cookie()
-        user = self.get_user(email)
+        user = self.get_user(name)
         service = self.get_service(self.get_argument('service'))
         with UserSaver(doc=user, rqh=self) as saver:
             saver.set_apikey(service['name'])

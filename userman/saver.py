@@ -1,5 +1,7 @@
 " Userman: Context handler for saving a document. "
 
+import tornado
+
 from . import constants
 from . import utils
 
@@ -46,7 +48,12 @@ class BaseSaver(object):
         except AttributeError:
             pass
         else:
-            checker(value)
+            try:
+                checker(value)
+            except ValueError, msg:
+                raise tornado.web.HTTPError(400, str(msg))
+            except KeyError, msg:
+                raise tornado.web.HTTPError(409, str(msg))
         try:
             converter = getattr(self, "convert_{0}".format(key))
         except AttributeError:

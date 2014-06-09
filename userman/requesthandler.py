@@ -9,6 +9,7 @@ from email.mime.text import MIMEText
 import tornado.web
 import couchdb
 
+import userman
 from . import settings
 from . import constants
 from . import utils
@@ -23,6 +24,7 @@ class RequestHandler(tornado.web.RequestHandler):
 
     def get_template_namespace(self):
         result = super(RequestHandler, self).get_template_namespace()
+        result['version'] = userman.__version__
         result['settings'] = settings
         result['constants'] = constants
         result['current_user'] = self.get_current_user()
@@ -59,19 +61,28 @@ class RequestHandler(tornado.web.RequestHandler):
             self._user = user
         return self._user
 
-    def get_user(self, email, require_active=False):
-        """Get the user document by its email.
+    def get_user(self, name, require_active=False):
+        """Get the user document by the account's username or email.
         Return HTTP 404 if no such user, or blocked if active required."""
-        key = "{0}:{1}".format(constants.USER, email)
+        key = "{0}:{1}".format(constants.USER, name)
         try:
             doc = self._cache[key]
         except KeyError:
-            result = list(self.db.view('user/email', include_docs=True)[email])
-            if len(result) == 1:
-                doc = result[0].doc
-                self._cache[key] = self._cache[doc.id] = doc
+            # name is the email address for the account
+            if '@' in name:
+                viewname = 'user/email'
             else:
+                viewname = 'user/username'
+            result = list(self.db.view(viewname, include_docs=True)[name])
+            if len(result) != 1:
                 raise tornado.web.HTTPError(404, 'no such user')
+            doc = result[0].doc
+            self._cache[doc.id] = doc
+            key = "{0}:{1}".format(constants.USER, doc['email'])
+            self._cache[key] = doc
+            if doc.get('username'):
+                key = "{0}:{1}".format(constants.USER, doc['username'])
+                self._cache[key] = doc
         if require_active and doc.get('status') != constants.ACTIVE:
             raise tornado.web.HTTPError(404, 'blocked user')
         return doc

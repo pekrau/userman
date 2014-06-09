@@ -38,9 +38,19 @@ Create User
 	<td>{% module Icon('mandatory') %}</td>
 	<td><input type="email" name="email" size="40"></td>
 	<td class="description">
-	  The email address is user name for the account.
+	  The email address is unique identifier for the account.
 	  It must be a valid institutional email address.
 	  Gmail, Yahoo and similar email addresses may be refused.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Username</th>
+	<td></td>
+	<td><input type="text" name="username" size="20"></td>
+	<td class="description">
+	  The username is an optional additional identifier for the account.
+	  It is available mostly for backwards compatibility reasons.
 	</td>
       </tr>
 

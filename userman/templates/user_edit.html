@@ -37,6 +37,19 @@ Edit User {{ user['email'] }}
       </tr>
 
       <tr>
+	<th>Username</th>
+	<td></td>
+	<td>
+	  <input type="text" name="username" size="20"
+		 value="{{ user.get('username') or ''}}">
+	</td>
+	<td class="description">
+	  The username is an optional additional identifier for the account.
+	  It is available mostly for backwards compatibility reasons.
+	</td>
+      </tr>
+
+      <tr>
 	<th>Role</th>
 	<td>{% module Icon('mandatory') %}</td>
 	<td>

@@ -6,6 +6,7 @@ import tornado
 import tornado.web
 import couchdb
 
+import userman
 from userman import settings
 from userman import constants
 from userman import utils
@@ -44,7 +45,7 @@ class Version(RequestHandler):
 
     def get(self):
         "Return version information for all software in the system."
-        versions = [('Userman', constants.VERSION),
+        versions = [('Userman', userman.__version__),
                     ('tornado', tornado.version),
                     ('CouchDB server', settings['DB_SERVER_VERSION']),
                     ('CouchDB module', couchdb.__version__)]

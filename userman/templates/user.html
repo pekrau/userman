@@ -51,6 +51,11 @@ User {{ user['email'] }}
   </tr>
 
   <tr>
+    <th>Username</th>
+    <td>{{ user.get('username') or '-' }}</td>
+  </tr>
+
+  <tr>
     <th>Role</th>
     <td>{{ user['role'] }}</td>
   </tr>

@@ -3,12 +3,12 @@
 This implementation uses Tornado (3.2 or later) and CouchDB (1.0.1 or later).
 """
 
+__version__ = '14.5'
+
 import os
 import socket
 import yaml
 
-import constants
-__version__ = constants.VERSION
 
 def readfile(filename):
     filepath = os.path.join(os.path.dirname(__file__), filename)

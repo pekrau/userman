@@ -2,8 +2,6 @@
 
 import re
 
-VERSION = '14.5'
-
 HIGH_CHAR = unichr(2**16)
 
 IUID_RX   = re.compile(r'^[0-9a-z]{32}$')
