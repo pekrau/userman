@@ -49,7 +49,7 @@ class UserSaver(DocumentSaver):
         if '@' in value:
             raise ValueError("at-sign '@' disallowed in username")
         if len(list(self.db.view('user/username')[value])) > 0:
-            raise KeyError("username already in use")
+            raise KeyError('username already in use')
 
     def convert_email(self, value):
         "Convert email value to lower case."
@@ -61,6 +61,11 @@ class UserSaver(DocumentSaver):
 
     def convert_password(self, value):
         return utils.hashed_password(value)
+
+    def check_status(self, value):
+        "Check status value."
+        if value not in constants.STATUSES:
+            raise ValueError('invalid status value')
 
     def convert_services(self, value):
         "Set the list of services the user may access."
@@ -284,21 +289,21 @@ class UserReset(RequestHandler):
         self.check_xsrf_cookie()
         try:
             user = self.get_user(self.get_argument('email'))
-            if user.get('status') != constants.ACTIVE:
-                raise ValueError
+            if user.get('status') not in (constants.APPROVED, constants.ACTIVE):
+                raise ValueError('account status not active')
             with UserSaver(doc=user, rqh=self) as saver:
                 code = utils.get_iuid()
                 deadline = utils.timestamp(days=settings['ACTIVATION_DEADLINE'])
                 saver['activation'] = dict(code=code, deadline=deadline)
-                saver['status'] = constants.APPROVED
+                saver['status'] = constants.ACTIVE
             self.send_email(user,
                             'Userman account password reset',
                             settings['RESET_EMAIL_TEXT'].format(
                                 url=self.get_absolute_url('user_activate'),
                                 email=user['email'],
                                 code=code))
-        except (tornado.web.HTTPError, ValueError):
-            pass
+        except (tornado.web.HTTPError, ValueError), msg:
+            logging.debug("account reset error: %s", msg)
         self.redirect(self.reverse_url('home'))
 
 

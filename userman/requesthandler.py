@@ -146,7 +146,7 @@ class RequestHandler(tornado.web.RequestHandler):
                       reverse=True)
 
     def send_email(self, user, subject, text):
-        self.check_admin()
+        "Send an email to the given user."
         mail = MIMEText(text)
         mail['Subject'] = subject
         mail['From'] = self.current_user['email']

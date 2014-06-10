@@ -29,3 +29,4 @@ PENDING  = 'pending'
 APPROVED = 'approved'
 ACTIVE   = 'active'
 BLOCKED  = 'blocked'
+STATUSES = set([PENDING, APPROVED, ACTIVE, BLOCKED])
