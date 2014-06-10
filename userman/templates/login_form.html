@@ -1,0 +1,44 @@
+{# Login form to be included in a page. #}
+
+<form action="{{ reverse_url('login') }}" method="POST">
+  {% module xsrf_form_html() %}
+
+  <fieldset>
+
+    <legend>Login to an existing account</legend>
+
+    {% if error %}
+    <p class="error">
+      Error: {{ error }}
+    </p>
+    {% end %}
+
+    <table class="fields">
+      <tr>
+	<th>Email or username</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td><input type="text" name="email" size="40"></td>
+      </tr>
+
+      <tr>
+	<th>Password</th>
+	<td>{% module Icon('mandatory') %}</td>
+	<td><input type="password" name="password"></td>
+      </tr>
+
+      <tr>
+	<th></th>
+	<td></td>
+	<td>
+	  {% if next %}
+	  <input type="hidden" name="next" value="{{ next }}">
+	  {% end %}
+	  {% module Submit('login') %}
+	</td>
+      </tr>
+    </table>
+
+  </fieldset>
+
+</form>
+

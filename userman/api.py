@@ -78,7 +78,7 @@ class ApiAuth(ApiRequestHandler):
             password = data['password']
         except KeyError, msg:
             raise tornado.web.HTTPError(400, reason='password missing')
-        if utils.hashed_password(password, check=False) != user['password']:
+        if utils.hashed_password(password) != user['password']:
             raise tornado.web.HTTPError(401, reason='invalid password')
 
 

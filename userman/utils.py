@@ -31,6 +31,20 @@ def get_db():
         raise KeyError("CouchDB database '%s' does not exist" %
                        settings['DB_DATABASE'])
 
+def get_user_doc(db, name):
+    """Get the document for the account given by name (email or username).
+    Raise ValueError if no such account."""
+    # 'name' is the email address for the account
+    if '@' in name:
+        viewname = 'user/email'
+    # else 'name' is the username for the account
+    else:
+        viewname = 'user/username'
+    result = list(db.view(viewname, include_docs=True)[name])
+    if len(result) != 1:
+        raise ValueError("no such user account '{0}'".format(name))
+    return result[0].doc
+
 def get_iuid():
     "Return a unique instance identifier."
     return uuid.uuid4().hex
@@ -56,11 +70,13 @@ def to_bool(value):
     value = value.lower()
     return value in ['true', 'yes'] or value[0] in ['t', 'y']
 
-def hashed_password(password, check=True):
-    "Hash the password. Raise ValueError if the quality is insufficient."
-    if check:
-        if len(password) < 6:
-            raise ValueError('password shorter than 6 characters')
+def check_password_quality(password):
+    "Check password quality. Raise ValueError if insufficient."
+    if len(password) < 6:
+        raise ValueError('password shorter than 6 characters')
+
+def hashed_password(password):
+    "Hash the password."
     m = hashlib.sha384(settings['HASH_SALT'])
     m.update(password)
     return m.hexdigest()

@@ -37,7 +37,9 @@ class Home(RequestHandler):
         except (KeyError, ValueError), msg:
             self.render('settings_error.html', message=str(msg))
         else:
-            self.render('home.html', next=self.get_argument('next', ''))
+            self.render('home.html',
+                        error=None,
+                        next=self.get_argument('next', ''))
 
 
 class Version(RequestHandler):

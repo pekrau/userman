@@ -55,6 +55,10 @@ class UserSaver(DocumentSaver):
         "Convert email value to lower case."
         return value.lower()
 
+    def check_password(self, value):
+        "Check password quality."
+        utils.check_password_quality(value)
+
     def convert_password(self, value):
         return utils.hashed_password(value)
 
@@ -243,7 +247,7 @@ class UserActivate(RequestHandler):
             if not activation_code:
                 raise ValueError('missing activation code')
             password = self.get_argument('password', '')
-            utils.hashed_password(password) # Checks quality
+            utils.check_password_quality(password)
             confirm_password = self.get_argument('confirm_password', '')
             if password != confirm_password:
                 raise ValueError('passwords do not match')

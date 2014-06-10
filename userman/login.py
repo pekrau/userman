@@ -27,7 +27,7 @@ class Login(RequestHandler):
             except tornado.web.HTTPError:
                 pass
             else:
-                password = utils.hashed_password(password, check=False)
+                password = utils.hashed_password(password)
                 if user.get('password') == password:
                     self.set_secure_cookie(constants.USER_COOKIE_NAME, email)
                     url = self.get_argument('next', None)
