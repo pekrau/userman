@@ -7,4 +7,5 @@ COOKIE_SECRET: 'some-other-secret-encryption-key-()/&%'
 API_KEYS:
   - 'This is a secret key 123! And a-b-c.'
 EMAIL:
-  SERVER: localhost
+  HOST: 'localhost'
+  PORT: 25

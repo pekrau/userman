@@ -151,7 +151,8 @@ class RequestHandler(tornado.web.RequestHandler):
         mail['Subject'] = subject
         mail['From'] = self.current_user['email']
         mail['To'] = user['email']
-        server = smtplib.SMTP(settings['EMAIL']['SERVER'])
+        server = smtplib.SMTP(host=settings['EMAIL']['HOST'],
+                              port=settings['EMAIL']['PORT'])
         if settings['EMAIL'].get('TLS'):
             server.starttls()
         try:
@@ -159,6 +160,9 @@ class RequestHandler(tornado.web.RequestHandler):
                          settings['EMAIL']['PASSWORD'])
         except KeyError:
             pass
+        logging.debug("sendmail %s %s",
+                      self.current_user['email'],
+                      user['email'])
         server.sendmail(self.current_user['email'],
                         [user['email']],
                         mail.as_string())
