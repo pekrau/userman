@@ -102,7 +102,7 @@ User {{ user['email'] }}
 	</tr>
 	{% for service in services %}
 	<tr>
-	  <td>
+	  <td class="nobr">
 	    {% module Service(service) %}
 	  </td>
 	  <td>
@@ -124,7 +124,7 @@ User {{ user['email'] }}
 	      {% module xsrf_form_html() %}
 	      <input type="hidden" name="service" value="{{ service['name'] }}">
 	      {% module Submit('apikey_new', title='New API key',
-	      onclick="return confirm('API key must also be updated for the user in the service.');") %}
+	      onclick="return confirm('API key must also be updated for the user account in the service.');") %}
 	    </form>
 	  </td>
 	</tr>

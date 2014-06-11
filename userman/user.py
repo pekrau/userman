@@ -318,7 +318,8 @@ class UserReset(RequestHandler):
                 activation_code = utils.get_iuid()
                 deadline = utils.timestamp(days=settings['ACTIVATION_PERIOD'])
                 saver['activation'] = dict(code=activation_code, deadline=deadline)
-                saver['status'] = constants.ACTIVE
+                saver['password'] = utils.get_iuid()
+                saver['status'] = constants.APPROVED
             url = self.get_absolute_url('user_activate')
             url_with_params = self.get_absolute_url('user_activate',
                                                     email=user['email'],
