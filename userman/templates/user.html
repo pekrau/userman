@@ -16,6 +16,9 @@ User {{ user['email'] }}
   {% module Submit('edit') %}
 </form>
 {% if user['email'] == current_user['email'] %}
+<form action="{{ reverse_url('user_reset') }}" method="GET">
+  {% module Submit('reset') %}
+</form>
 <form action="{{ reverse_url('logout') }}" method="POST">
   {% module xsrf_form_html() %}
   {% module Submit('logout') %}

@@ -319,7 +319,7 @@ class UserReset(RequestHandler):
                 saver['activation'] = dict(code=code, deadline=deadline)
                 saver['status'] = constants.ACTIVE
             self.send_email(user,
-                            self.current_user,
+                            self.get_admins()[0], # Arbitrarily the first admin
                             'Userman account password reset',
                             settings['RESET_EMAIL_TEXT'].format(
                                 url=self.get_absolute_url('user_activate'),
