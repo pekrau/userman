@@ -11,4 +11,4 @@ The Userman administrator.
 
 Activation page: {url}
 User email: {email}
-Activation code: {activation_code}
+Activation code: {activation_code} (Valid for {period} days.)

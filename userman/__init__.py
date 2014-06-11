@@ -23,7 +23,7 @@ settings = dict(HOSTNAME=socket.gethostname().split('.')[0],
                 DB_SERVER='http://localhost:5984/',
                 DB_DATABASE='userman',
                 API_KEYS=[],
-                ACTIVATION_DEADLINE=7.0, # Unit: days
+                ACTIVATION_PERIOD=7.0, # Unit: days
                 ACTIVATION_EMAIL_TEXT=readfile('messages/activation_email.txt'),
                 RESET_EMAIL_TEXT=readfile('messages/reset_email.txt'),
                 )

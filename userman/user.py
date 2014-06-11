@@ -206,7 +206,7 @@ class UserApprove(RequestHandler):
             raise tornado.web.HTTPError(409, 'account not pending')
         with UserSaver(doc=user, rqh=self) as saver:
             activation_code = utils.get_iuid()
-            deadline = utils.timestamp(days=settings['ACTIVATION_DEADLINE'])
+            deadline = utils.timestamp(days=settings['ACTIVATION_PERIOD'])
             saver['activation'] = dict(code=activation_code, deadline=deadline)
             saver['status'] = constants.APPROVED
         url = self.get_absolute_url('user_activate')
@@ -214,6 +214,7 @@ class UserApprove(RequestHandler):
                                                 email=user['email'],
                                                 activation_code=activation_code)
         text = settings['ACTIVATION_EMAIL_TEXT'].format(
+            period=settings['ACTIVATION_PERIOD'],
             url=url,
             url_with_params=url_with_params,
             email=user['email'],
@@ -315,7 +316,7 @@ class UserReset(RequestHandler):
                 raise ValueError('account status not active')
             with UserSaver(doc=user, rqh=self) as saver:
                 activation_code = utils.get_iuid()
-                deadline = utils.timestamp(days=settings['ACTIVATION_DEADLINE'])
+                deadline = utils.timestamp(days=settings['ACTIVATION_PERIOD'])
                 saver['activation'] = dict(code=activation_code, deadline=deadline)
                 saver['status'] = constants.ACTIVE
             url = self.get_absolute_url('user_activate')
@@ -323,6 +324,7 @@ class UserReset(RequestHandler):
                                                     email=user['email'],
                                                     activation_code=activation_code)
             text = settings['RESET_EMAIL_TEXT'].format(
+                period=settings['PERIOD'],
                 url=url,
                 url_with_params=url_with_params,
                 email=user['email'],
