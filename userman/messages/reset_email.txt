@@ -1,11 +1,14 @@
 You have reset the password for your user account in the Userman service.
+The activation code below is valid for {days} only.
 
-Now you need to re-activate the account and set the password for it.
+Now you need to re-activate the account by setting the password for it.
 
-Go to {url} and enter the following information:
+Go to {url_with_params} and enter the password of your choice.
 
-User email:      {email}
-Activation code: {code}
-Password:        [your choice]
+Thank you,
+The Userman administrator.
 
-/The Userman administrator.
+
+Activation page: {url}
+User email: {email}
+Activation code: {activation_code}

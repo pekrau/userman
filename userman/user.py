@@ -214,10 +214,10 @@ class UserApprove(RequestHandler):
                                                 email=user['email'],
                                                 activation_code=activation_code)
         text = settings['ACTIVATION_EMAIL_TEXT'].format(
-                            url=url,
-                            url_with_params=url_with_params,
-                            email=user['email'],
-                            activation_code=activation_code)
+            url=url,
+            url_with_params=url_with_params,
+            email=user['email'],
+            activation_code=activation_code)
         self.send_email(user,
                         self.current_user,
                         'Userman account activation',
@@ -314,17 +314,23 @@ class UserReset(RequestHandler):
             if user.get('status') not in (constants.APPROVED, constants.ACTIVE):
                 raise ValueError('account status not active')
             with UserSaver(doc=user, rqh=self) as saver:
-                code = utils.get_iuid()
+                activation_code = utils.get_iuid()
                 deadline = utils.timestamp(days=settings['ACTIVATION_DEADLINE'])
-                saver['activation'] = dict(code=code, deadline=deadline)
+                saver['activation'] = dict(code=activation_code, deadline=deadline)
                 saver['status'] = constants.ACTIVE
+            url = self.get_absolute_url('user_activate')
+            url_with_params = self.get_absolute_url('user_activate',
+                                                    email=user['email'],
+                                                    activation_code=activation_code)
+            text = settings['RESET_EMAIL_TEXT'].format(
+                url=url,
+                url_with_params=url_with_params,
+                email=user['email'],
+                activation_code=activation_code)
             self.send_email(user,
                             self.get_admins()[0], # Arbitrarily the first admin
                             'Userman account password reset',
-                            settings['RESET_EMAIL_TEXT'].format(
-                                url=self.get_absolute_url('user_activate'),
-                                email=user['email'],
-                                code=code))
+                            text)
         except (tornado.web.HTTPError, ValueError), msg:
             logging.debug("account reset error: %s", msg)
         self.redirect(self.reverse_url('home'))
