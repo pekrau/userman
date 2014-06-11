@@ -95,14 +95,6 @@ class UserMixin(object):
         if not self.may_access_user(user):
             raise tornado.web.HTTPError(403, 'you may not access user')
 
-    def get_user_services(self, user):
-        result = set([self.get_service(s) for s in user['services']])
-        for row in self.db.view('service/name'):
-            service = self.get_service(row.key)
-            if service.get('public'):
-                result.add(service)
-        return sorted(result, cmp=utils.cmp_name)
-
 
 class User(UserMixin, RequestHandler):
     "Display a user account."
@@ -158,14 +150,16 @@ class UserEdit(UserMixin, RequestHandler):
 
 
 class UserCreate(RequestHandler):
-    """Create a user account, and send an email
-     to the administrator requesting review."""
+    """Create a user account. Anyone may do this.
+    Send an email to the administrator requesting review for approval."""
 
     def get(self):
+        "Display the user account creation form."
         self.render('user_create.html',
                     countries=sorted([c.name for c in pycountry.countries]))
 
     def post(self):
+        "Create the user account."
         self.check_xsrf_cookie()
         # Some fields initialized by UserSaver
         with UserSaver(rqh=self) as saver:
@@ -176,7 +170,28 @@ class UserCreate(RequestHandler):
             saver['department'] = self.get_argument('department', None)
             saver['university'] = self.get_argument('university', None)
             saver['country'] = self.get_argument('country')
-        self.redirect(self.reverse_url('user_activate'))
+            saver['services'] = [r.key for r in self.db.view('service/public')]
+            user = saver.doc
+        text = "Review new Userman account {email} for approval: {url}".format(
+            email=user['email'],
+            url=self.get_absolute_url('user', user['email']))
+        for admin in self.get_admins():
+            self.send_email(admin,
+                            admin,
+                            'Review Userman account for approval',
+                            text)
+        self.redirect(self.reverse_url('user_acknowledge', user['email']))
+
+
+class UserAcknowledge(RequestHandler):
+    """Acknowledge the creation of the user account.
+    Explain what is going to happen."""
+
+    def get(self, name):
+        user = self.get_user(name)
+        if user['status'] != constants.PENDING:
+            raise tornado.web.HTTPError(409, 'account not pending')
+        self.render('user_acknowledge.html', user=user)
 
 
 class UserApprove(RequestHandler):
@@ -190,16 +205,23 @@ class UserApprove(RequestHandler):
         if user['status'] != constants.PENDING:
             raise tornado.web.HTTPError(409, 'account not pending')
         with UserSaver(doc=user, rqh=self) as saver:
-            code = utils.get_iuid()
+            activation_code = utils.get_iuid()
             deadline = utils.timestamp(days=settings['ACTIVATION_DEADLINE'])
-            saver['activation'] = dict(code=code, deadline=deadline)
+            saver['activation'] = dict(code=activation_code, deadline=deadline)
             saver['status'] = constants.APPROVED
-        self.send_email(user,
-                        'Userman account activation',
-                        settings['ACTIVATION_EMAIL_TEXT'].format(
-                            url=self.get_absolute_url('user_activate'),
+        url = self.get_absolute_url('user_activate')
+        url_with_params = self.get_absolute_url('user_activate',
+                                                email=user['email'],
+                                                activation_code=activation_code)
+        text = settings['ACTIVATION_EMAIL_TEXT'].format(
+                            url=url,
+                            url_with_params=url_with_params,
                             email=user['email'],
-                            code=code))
+                            activation_code=activation_code)
+        self.send_email(user,
+                        self.current_user,
+                        'Userman account activation',
+                        text)
         self.redirect(self.reverse_url('user', user['email']))
 
 
@@ -297,6 +319,7 @@ class UserReset(RequestHandler):
                 saver['activation'] = dict(code=code, deadline=deadline)
                 saver['status'] = constants.ACTIVE
             self.send_email(user,
+                            self.current_user,
                             'Userman account password reset',
                             settings['RESET_EMAIL_TEXT'].format(
                                 url=self.get_absolute_url('user_activate'),

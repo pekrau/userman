@@ -1,0 +1,40 @@
+{# User creation acknowledgement page. #}
+{% block head_title %}
+Created User {{ user['email'] }}
+{% end %}
+
+{% block title %}
+Created
+{% module Icon('user', label=True) %}
+{{ user['email'] }}
+{% end %}
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<ul>
+  <li>
+    The user account <b>{{ user['email'] }}</b> has been created,
+    but it has not yet been approved or activated.
+  </li>
+  <li>
+    The Userman administrator will review the new account for approval.
+    This may take some time, depending on the workload for the administrator.
+  </li>
+  <li>
+    If the new account is approved, you will receive an email containing
+    information on how to activate it.
+  </li>
+  <li>
+    If the new account is declined, for whatever reason, nothing will happen.
+  </li>
+</ul>
+
+<p>
+  Thank you,
+  <br>
+  The Userman administrator.
+</p>
+
+{% end %}

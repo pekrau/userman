@@ -13,17 +13,6 @@ Create User
 
 {% block content %}
 
-<h3>How a new account is created:</h3>
-<ol>
-<li> Fill in the required data below.
-<li> Submit by pressing the button {% module Icon('create') %} Create.
-<li> The administrator who will approve or reject your application.
-  Please allow two (2) working days.
-<li> If your request is approved, you will get an email with an
-  activation code. Follow its instructions.
-<li> If your request is rejected, nothing will happen.
-</ol>
-
 <form action="{{ reverse_url('user_create') }}"
       method="POST">
   {% module xsrf_form_html() %}
@@ -40,7 +29,8 @@ Create User
 	<td class="description">
 	  The email address is unique identifier for the account.
 	  It must be a valid institutional email address.
-	  Gmail, Yahoo and similar email addresses may be refused.
+	  Gmail, Yahoo and similar email addresses may cause the sysadmin
+	  to decline the account.
 	</td>
       </tr>
 
@@ -68,7 +58,8 @@ Create User
 	<td></td>
 	<td><input type="text" name="university" size="40"></td>
 	<td class="description">
-	  Your main affiliation: University, college, school, company, etc.
+	  Your main affiliation: University, college, school, company,
+	  self-employed, etc.
 	</td>
       </tr>
 
@@ -112,5 +103,14 @@ Create User
   </fieldset>
 
 </form>
+
+<h3>NOTE: New accounts are subject to system administrator approval!</h3>
+<p>
+  When you have submitted this form, the Userman system administrator will
+  review the account, and approve it if the information appears legitimate.
+</p>
+<p>
+  This may take some time, depending on the workload of the administrator.
+</p>
 
 {% end %}

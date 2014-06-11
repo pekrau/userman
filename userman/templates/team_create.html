@@ -51,6 +51,7 @@ Team
 	<td>
 	  <input type="radio" name="status" value="active" checked>
 	  {% module Icon('active', label=True) %}
+	  &nbsp;&nbsp;
 	  <input type="radio" name="status" value="blocked">
 	  {% module Icon('blocked', label=True) %}
 	</td>
@@ -65,12 +66,13 @@ Team
 	<td>
 	  <input type="radio" name="public" value="true">
 	  {% module Icon('public', label=True) %}
+	  &nbsp;&nbsp;
 	  <input type="radio" name="public" value="false" checked>
 	  {% module Icon('private', label=True) %}
 	</td>
 	<td class="description">
 	  The access of the team. Public means that any user can join it.
-	  Private means that the team leader includes a user.
+	  Private means that the team leader must include users.
 	</td>
       </tr>
 

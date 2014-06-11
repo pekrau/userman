@@ -5,10 +5,8 @@ Activate User
 {% end %}
 
 {% block title %}
-{% module Icon('activate') %}
-Activate
-{% module Icon('user') %}
-User
+{% module Icon('activate', label=True) %}
+{% module Icon('user', label=True) %}
 {% end %}
 
 {% extends "base.html" %}

@@ -37,9 +37,7 @@ class Home(RequestHandler):
         except (KeyError, ValueError), msg:
             self.render('settings_error.html', message=str(msg))
         else:
-            self.render('home.html',
-                        error=None,
-                        next=self.get_argument('next', ''))
+            self.render('home.html', message='Blah', next=self.get_argument('next', ''))
 
 
 class Version(RequestHandler):
@@ -66,6 +64,7 @@ handlers = \
      URL(r'/user/([^/]+)/block', UserBlock, name='user_block'),
      URL(r'/user/([^/]+)/unblock', UserUnblock, name='user_unblock'),
      URL(r'/user/([^/]+)/apikey', UserApiKey, name='user_apikey'),
+     URL(r'/user/([^/]+)/acknowledge',UserAcknowledge, name='user_acknowledge'),
      URL(r'/user', UserCreate, name='user_create'),
      URL(r'/users', Users, name='users'),
      URL(r'/users/pending', UsersPending, name='users_pending'),

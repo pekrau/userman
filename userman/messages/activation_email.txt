@@ -3,10 +3,13 @@ The account has been approved by the administrator.
 
 Now you need to activate the account and set the password for it.
 
-Go to {url} and enter the following information:
+Go to {url_with_params} and enter the password of your choice.
 
-User email:      {email}
-Activation code: {code}
-Password:        [your choice]
+Thank you,
+The Userman administrator.
 
-/The Userman administrator.
+
+Activation page: {url}
+User email: {email}
+Activation code: {activation_code}
+

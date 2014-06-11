@@ -24,9 +24,9 @@ LOG        = 'log'
 ADMIN = 'admin'
 ROLES = [USER, ADMIN]
 
-# Status
-PENDING  = 'pending'
-APPROVED = 'approved'
-ACTIVE   = 'active'
-BLOCKED  = 'blocked'
+# Account status
+PENDING  = 'pending'            # Account created, admin needs to approve
+APPROVED = 'approved'           # Account approved, activation code sent
+ACTIVE   = 'active'             # Account activated by user
+BLOCKED  = 'blocked'            # Account blocked by admin
 STATUSES = set([PENDING, APPROVED, ACTIVE, BLOCKED])

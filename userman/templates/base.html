@@ -64,7 +64,15 @@
       {% if is_admin %}
       <div><a href="{{ reverse_url('users') }}">Users</a></div>
       <div class="menu1">
-	<div><a href="{{ reverse_url('users_pending') }}">Pending</a></div>
+	<div class="nobr">
+	  <a href="{{ reverse_url('users_pending') }}">
+	    {% if any_pending %}
+	    {% module Icon('pending', label=True) %}
+	    {% else %}
+	    Pending
+	    {% end %}
+	  </a>
+	</div>
 	<div><a href="{{ reverse_url('users_blocked') }}">Blocked</a></div>
       </div>
       {% end %}
@@ -88,6 +96,13 @@
     {% block outer_content %}
 
     <div class="content">
+
+      {% if error %}
+      <p class="error">
+	Error: {{ error }}
+      </p>
+      {% end %}
+
       <table>
 	<tr>
 	  <td class="top">

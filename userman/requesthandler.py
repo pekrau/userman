@@ -27,8 +27,13 @@ class RequestHandler(tornado.web.RequestHandler):
         result['version'] = userman.__version__
         result['settings'] = settings
         result['constants'] = constants
+        result['error'] = None
         result['current_user'] = self.get_current_user()
         result['is_admin'] = self.is_admin()
+        if result['is_admin']:
+            result['any_pending'] = len(list(self.db.view('user/pending')))
+        else:
+            result['any_pending'] = False
         result['self_url'] = self.request.uri
         return result
 
@@ -121,6 +126,11 @@ class RequestHandler(tornado.web.RequestHandler):
         if not self.is_admin():
             raise tornado.web.HTTPError(403, 'admin role required')
 
+    def get_admins(self):
+        "Return all admin accounts as a list of documents."
+        view = self.db.view('user/role', include_docs=True)
+        return [r.doc for r in view['admin']]
+
     def get_doc(self, id, doctype=None):
         "Return the document given by its id, optionally checking the doctype."
         try:
@@ -133,7 +143,6 @@ class RequestHandler(tornado.web.RequestHandler):
                         msg = 'invalid doctype'
                         raise ValueError(msg)
                 self._cache[id] = doc
-                    
                 return doc
             except couchdb.ResourceNotFound:
                 raise ValueError('no such document')
@@ -145,12 +154,12 @@ class RequestHandler(tornado.web.RequestHandler):
                       cmp=utils.cmp_modified,
                       reverse=True)
 
-    def send_email(self, user, subject, text):
-        "Send an email to the given user."
+    def send_email(self, recipient, sender, subject, text):
+        "Send an email to the given recipient from the given sender user."
         mail = MIMEText(text)
         mail['Subject'] = subject
-        mail['From'] = self.current_user['email']
-        mail['To'] = user['email']
+        mail['From'] = sender['email']
+        mail['To'] = recipient['email']
         server = smtplib.SMTP(host=settings['EMAIL']['HOST'],
                               port=settings['EMAIL']['PORT'])
         if settings['EMAIL'].get('TLS'):
@@ -160,10 +169,8 @@ class RequestHandler(tornado.web.RequestHandler):
                          settings['EMAIL']['PASSWORD'])
         except KeyError:
             pass
-        logging.debug("sendmail %s %s",
-                      self.current_user['email'],
-                      user['email'])
-        server.sendmail(self.current_user['email'],
-                        [user['email']],
-                        mail.as_string())
+        logging.debug("sendmail from %s to %s",
+                      sender['email'],
+                      recipient['email'])
+        server.sendmail(sender['email'], [recipient['email']], mail.as_string())
         server.quit()
