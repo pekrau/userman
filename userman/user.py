@@ -324,7 +324,7 @@ class UserReset(RequestHandler):
                                                     email=user['email'],
                                                     activation_code=activation_code)
             text = settings['RESET_EMAIL_TEXT'].format(
-                period=settings['PERIOD'],
+                period=settings['ACTIVATION_PERIOD'],
                 url=url,
                 url_with_params=url_with_params,
                 email=user['email'],
