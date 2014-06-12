@@ -149,61 +149,12 @@ class UserEdit(UserMixin, RequestHandler):
         self.redirect(self.reverse_url('user', user['email']))
 
 
-class UserCreate(RequestHandler):
-    """Create a user account. Anyone may do this.
-    Send an email to the administrator requesting review for approval."""
+class UserApproveMixin(object):
+    "Mixin to factor out common approval code."
 
-    def get(self):
-        "Display the user account creation form."
-        self.render('user_create.html',
-                    countries=sorted([c.name for c in pycountry.countries]))
-
-    def post(self):
-        "Create the user account."
-        self.check_xsrf_cookie()
-        # Some fields initialized by UserSaver
-        with UserSaver(rqh=self) as saver:
-            saver['email'] = self.get_argument('email')
-            saver['username'] = self.get_argument('username', None)
-            saver['role'] = constants.USER
-            saver['fullname'] = self.get_argument('fullname')
-            saver['department'] = self.get_argument('department', None)
-            saver['university'] = self.get_argument('university', None)
-            saver['country'] = self.get_argument('country')
-            saver['services'] = [r.key for r in self.db.view('service/public')]
-            user = saver.doc
-        text = "Review new Userman account {email} for approval: {url}".format(
-            email=user['email'],
-            url=self.get_absolute_url('user', user['email']))
-        for admin in self.get_admins():
-            self.send_email(admin,
-                            admin,
-                            'Review Userman account for approval',
-                            text)
-        self.redirect(self.reverse_url('user_acknowledge', user['email']))
-
-
-class UserAcknowledge(RequestHandler):
-    """Acknowledge the creation of the user account.
-    Explain what is going to happen."""
-
-    def get(self, name):
-        user = self.get_user(name)
-        if user['status'] != constants.PENDING:
-            raise tornado.web.HTTPError(409, 'account not pending')
-        self.render('user_acknowledge.html', user=user)
-
-
-class UserApprove(RequestHandler):
-    "Approve a user account; email the activation code."
-
-    @tornado.web.authenticated
-    def post(self, name):
-        self.check_xsrf_cookie()
-        self.check_admin()
-        user = self.get_user(name)
-        if user['status'] != constants.PENDING:
-            raise tornado.web.HTTPError(409, 'account not pending')
+    def approve_user(self, user):
+        "Approve the given user."
+        assert self.is_admin()
         with UserSaver(doc=user, rqh=self) as saver:
             activation_code = utils.get_iuid()
             deadline = utils.timestamp(days=settings['ACTIVATION_PERIOD'])
@@ -224,6 +175,69 @@ class UserApprove(RequestHandler):
                         'Userman account activation',
                         text)
         self.redirect(self.reverse_url('user', user['email']))
+
+
+class UserCreate(UserApproveMixin, RequestHandler):
+    """Create a user account. Anyone may do this.
+    If non-admin, then send an email to the admin requesting approval review.
+    If admin, approve immediately and send that email instead."""
+
+    def get(self):
+        "Display the user account creation form."
+        self.render('user_create.html',
+                    countries=sorted([c.name for c in pycountry.countries]))
+
+    def post(self):
+        "Create the user account."
+        self.check_xsrf_cookie()
+        # Some fields initialized by UserSaver
+        with UserSaver(rqh=self) as saver:
+            saver['email'] = self.get_argument('email')
+            saver['username'] = self.get_argument('username', None)
+            saver['role'] = constants.USER
+            saver['fullname'] = self.get_argument('fullname')
+            saver['department'] = self.get_argument('department', None)
+            saver['university'] = self.get_argument('university', None)
+            saver['country'] = self.get_argument('country')
+            saver['services'] = [r.key for r in self.db.view('service/public')]
+            user = saver.doc
+        if self.is_admin(): # Activate immediately if admin creator is admin.
+            self.approve_user(user)
+        else:               # Require approval by admin if non-admin creator.
+            text = "Review Userman account {email} for approval: {url}".format(
+                email=user['email'],
+                url=self.get_absolute_url('user', user['email']))
+            for admin in self.get_admins():
+                self.send_email(admin,
+                                admin,
+                                'Review Userman account for approval',
+                                text)
+                url = self.reverse_url('user_acknowledge', user['email'])
+                self.redirect(url)
+
+
+class UserAcknowledge(RequestHandler):
+    """Acknowledge the creation of the user account.
+    Explain what is going to happen."""
+
+    def get(self, name):
+        user = self.get_user(name)
+        if user['status'] != constants.PENDING:
+            raise tornado.web.HTTPError(409, 'account not pending')
+        self.render('user_acknowledge.html', user=user)
+
+
+class UserApprove(UserApproveMixin, RequestHandler):
+    "Approve a user account; email the activation code."
+
+    @tornado.web.authenticated
+    def post(self, name):
+        self.check_xsrf_cookie()
+        self.check_admin()
+        user = self.get_user(name)
+        if user['status'] != constants.PENDING:
+            raise tornado.web.HTTPError(409, 'account not pending')
+        self.approve_user(user)
 
 
 class UserBlock(RequestHandler):

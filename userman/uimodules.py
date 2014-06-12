@@ -59,7 +59,7 @@ class User(Doc):
             return 'user.png'
 
     def get_title(self):
-        return self.doc.get('fullname') or self.doc['email']
+        return self.doc['email']
 
 
 class Team(Doc):

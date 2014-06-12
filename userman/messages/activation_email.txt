@@ -1,4 +1,4 @@
-You have created a new user account in the Userman service.
+A new user account {email} has been created for you in the Userman service.
 The account has been approved by the administrator.
 
 Now you need to activate the account by setting the password for it.
@@ -10,5 +10,5 @@ The Userman administrator
 
 
 Activation page: {url}
-User email: {email}
+User account (=email): {email}
 Activation code (valid for {period} days): {activation_code}
