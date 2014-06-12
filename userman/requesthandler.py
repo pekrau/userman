@@ -76,7 +76,7 @@ class RequestHandler(tornado.web.RequestHandler):
             try:
                 doc = utils.get_user_doc(self.db, name)
             except ValueError, msg:
-                raise tornado.web.HTTPError(404, str(msg))
+                raise tornado.web.HTTPError(404, reason=str(msg))
             self._cache[doc.id] = doc
             key = "{0}:{1}".format(constants.USER, doc['email'])
             self._cache[key] = doc
@@ -84,7 +84,7 @@ class RequestHandler(tornado.web.RequestHandler):
                 key = "{0}:{1}".format(constants.USER, doc['username'])
                 self._cache[key] = doc
         if require_active and doc.get('status') != constants.ACTIVE:
-            raise tornado.web.HTTPError(404, 'blocked user')
+            raise tornado.web.HTTPError(404, reason='blocked user')
         return doc
 
     def get_service(self, name):
@@ -98,7 +98,7 @@ class RequestHandler(tornado.web.RequestHandler):
                 doc = result[0].doc
                 self._cache[key] = self._cache[doc.id] = doc
                 return doc
-            raise tornado.web.HTTPError(404, 'no such service')
+            raise tornado.web.HTTPError(404, reason='no such service')
 
     def get_all_services(self):
         return [self.get_service(r.key) for r in self.db.view('service/name')]
@@ -114,7 +114,7 @@ class RequestHandler(tornado.web.RequestHandler):
                 doc = result[0].doc
                 self._cache[key] = self._cache[doc.id] = doc
                 return doc
-            raise tornado.web.HTTPError(404, 'no such team')
+            raise tornado.web.HTTPError(404, reason='no such team')
 
     def is_admin(self):
         "Is the current user admin?"
@@ -124,7 +124,7 @@ class RequestHandler(tornado.web.RequestHandler):
     def check_admin(self):
         "Check that the current user is admin."
         if not self.is_admin():
-            raise tornado.web.HTTPError(403, 'admin role required')
+            raise tornado.web.HTTPError(403, reason='admin role required')
 
     def get_admins(self):
         "Return all admin accounts as a list of documents."

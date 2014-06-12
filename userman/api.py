@@ -61,9 +61,9 @@ class ApiAuth(ApiRequestHandler):
         try:
             service = data['service']
         except KeyError, msg:
-            raise tornado.web.HTTPError(400, reason='service missing')
+            raise tornado.web.HTTPError(400, reason='no service specified')
         if service not in user['services']:
-            raise tornado.web.HTTPError(401, reason='invalid service')
+            raise tornado.web.HTTPError(401, reason='service not enabled')
         user = utils.cleanup_doc(user)
         try:
             apikeys = user.pop('apikeys')
