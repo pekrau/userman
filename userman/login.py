@@ -1,5 +1,7 @@
 " Userman: Login and logout handlers. "
 
+import logging
+
 import tornado
 import tornado.web
 
@@ -19,28 +21,31 @@ class Login(RequestHandler):
 
     def post(self):
         self.check_xsrf_cookie()
-        email = self.get_argument('email', '')
-        password = self.get_argument('password', '')
-        if email and password:
-            try:
-                user = self.get_user(email, require_active=True)
-            except tornado.web.HTTPError:
-                pass
-            else:
-                password = utils.hashed_password(password)
-                if user.get('password') == password:
-                    self.set_secure_cookie(constants.USER_COOKIE_NAME, email)
-                    url = self.get_argument('next', None)
-                    if not url:
-                        url = self.reverse_url('user', email)
-                    self.redirect(url)
-                    return
+        try:
+            email = self.get_argument('email')
+            password = utils.hashed_password(self.get_argument('password'))
+            user = self.get_user(email, require_active=True)
+            if user.get('password') != password:
+                changed = dict(login_failure=self.request.remote_ip)
+                utils.log(self.db, user, changed=changed)
+                raise ValueError('invalid password')
+            self.set_secure_cookie(constants.USER_COOKIE_NAME, email)
+            self._user = user
+            url = self.get_argument('next', None)
+            if not url:
+                if self.is_admin():
+                    if len(list(self.db.view('user/pending'))):
+                        url = self.reverse_url('users_pending')
+                    else:
+                        url = self.reverse_url('users')
                 else:
-                    changed = dict(login_failure=self.request.remote_ip)
-                    utils.log(self.db, user, changed=changed)
-        self.render('login.html',
-                    error='invalid user or password',
-                    next=self.get_argument('next', None))
+                    url = self.reverse_url('user', email)
+            self.redirect(url)
+        except (tornado.web.MissingArgumentError, ValueError), msg:
+            logging.debug("login error: %s", msg)
+            self.render('login.html',
+                        error=str(msg),
+                        next=self.get_argument('next', None))
 
 
 class Logout(RequestHandler):
