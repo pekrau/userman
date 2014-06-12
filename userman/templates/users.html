@@ -20,6 +20,7 @@ Users
     <th>Username</th>
     <th>Role</th>
     <th>Status</th>
+    <th>Services</th>
     <th>Name</th>
     <th>Created</th>
     <th>Modified</th>
@@ -33,6 +34,14 @@ Users
     <td>{{ user.get('username') or '-' }}</td>
     <td>{{ user['role'] }}</td>
     <td>{% module Icon(user['status'], label=True) %}</td>
+    <td>
+      {% for service in user['services'] %}
+      <div class="nobr">
+	{% module Icon('service') %}
+	<a href="{{ reverse_url('service', service) }}">{{ service }}</a>
+      </div>
+      {% end %}
+    </td>
     <td>{{ user.get('fullname') or '' }}</td>
     <td class="localtime">{{ user['created'] }}</td>
     <td class="localtime">{{ user['modified'] }}</td>
