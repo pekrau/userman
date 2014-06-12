@@ -1,11 +1,22 @@
 # Userman: Example settings file.
-TORNADO_DEBUG: True
-LOGGING_DEBUG: True
-DB_SERVER: 'http://pekrau:mypwd@localhost:5984/'
+BASE_URL: 'http://localhost:8880/'
+DB_SERVER: 'http://username:password@localhost:5984/'
 HASH_SALT: 'some-long_secret_hash-key_#%"!'
 COOKIE_SECRET: 'some-other-secret-encryption-key-()/&%'
+# Debugging levels.
+TORNADO_DEBUG: True
+LOGGING_DEBUG: True
+# Access keys from other services.
 API_KEYS:
   - 'This is a secret key 123! And a-b-c.'
+# Email server info.
 EMAIL:
-  HOST: 'localhost'
-  PORT: 25
+# Simplest case:
+#  HOST: 'localhost'
+#  PORT: 25
+# Gmail:
+  HOST: 'smtp.gmail.com'
+  PORT: 587
+  TLS: True
+  ACCOUNT: 'user.email@scilifelab.se'
+  PASSWORD: 'password'

@@ -16,8 +16,7 @@ def readfile(filename):
         return infile.read()
     
 settings = dict(HOSTNAME=socket.gethostname().split('.')[0],
-                URL_PORT=8880,
-                BASE_URL='http://localhost:8880/', # XXX How def port better?
+                BASE_URL='http://localhost:8880/',
                 TORNADO_DEBUG=True,
                 LOGGING_DEBUG=False,
                 DB_SERVER='http://localhost:5984/',

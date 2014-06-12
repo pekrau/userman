@@ -1,5 +1,6 @@
 " Userman: Various utility functions. "
 
+import urlparse
 import uuid
 import hashlib
 import datetime
@@ -22,6 +23,19 @@ def check_settings():
             raise ValueError("setting {0} has invalid value".format(key))
     if len(settings['COOKIE_SECRET']) < 10:
         raise ValueError('setting COOKIE_SECRET too short')
+
+def get_port(url):
+    "Get the port number (integer) from the URL."
+    parts = urlparse.urlparse(url)
+    items = parts.netloc.split(':')
+    if len(items) == 2:
+        return int(items[1])
+    if parts.scheme == 'http':
+        return 80
+    elif parts.scheme == 'https':
+        return 443
+    else:
+        raise ValueError("could not determine port from URL {0}".format(url))
 
 def get_db():
     "Return the handle for the CouchDB database."
