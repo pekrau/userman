@@ -17,6 +17,7 @@ Services
   <tr>
     <th>Name</th>
     <th>URL</th>
+    <th>Available</th>
     <th>Status</th>
     <th>Access</th>
     <th>Created</th>
@@ -31,6 +32,11 @@ Services
       </a>
     </td>
     <td><a href="{{ service['href'] }}">{{ service['href'] }}</a></td>
+    <td>
+      {% if current_user and service['name'] in current_user['services'] %}
+      {% module Icon('approved', title='available') %}
+      {% end %}
+    </td>
     <td>{% module Icon(service['status'], label=True) %}</td>
     <td>{% module Access(service, label=True) %}</td>
     <td class="localtime">{{ service['created'] }}</td>
