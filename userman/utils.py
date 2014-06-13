@@ -23,9 +23,9 @@ def load_settings(filepath=None):
     Raise IOError if no readable settings file was found.
     Raise KeyError if a settings variable is missing.
     Raise ValueError if the settings variable value is invalid."""
+    homedir = os.path.expandvars('$HOME')
+    basedir = os.path.dirname(__file__)
     if not filepath:
-        homedir = os.path.expandvars('$HOME')
-        basedir = os.path.dirname(__file__)
         hostname = socket.gethostname().split('.')[0]
         for filepath in [os.path.join(homedir, "{0}.yaml".format(hostname)),
                          os.path.join(homedir, 'default.yaml'),
