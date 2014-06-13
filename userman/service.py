@@ -31,7 +31,6 @@ class ServiceSaver(DocumentSaver):
 class Service(RequestHandler):
     "Display a service."
 
-    @tornado.web.authenticated
     def get(self, name):
         service = self.get_service(name)
         self.render('service.html',
@@ -94,7 +93,6 @@ class ServiceEdit(RequestHandler):
 class Services(RequestHandler):
     "Display all services."
 
-    @tornado.web.authenticated
     def get(self):
         self.render('services.html', services=self.get_all_services())
 
