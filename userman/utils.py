@@ -1,5 +1,8 @@
 " Userman: Various utility functions. "
 
+import os
+import socket
+import logging
 import urlparse
 import uuid
 import hashlib
@@ -8,34 +11,65 @@ import unicodedata
 
 import tornado.web
 import couchdb
+import yaml
 
 from userman import constants
 from userman import settings
 
 
-def check_settings():
-    """Raise KeyError if a settings variable is missing.
+def load_settings(filepath=None):
+    """Load the settings from the given settings file, or from the first
+    existing file in a predefined list of filepaths.
+    Raise IOError if no readable settings file was found.
+    Raise KeyError if a settings variable is missing.
     Raise ValueError if the settings variable value is invalid."""
-    for key in ['DB_SERVER', 'DB_DATABASE', 'COOKIE_SECRET', 'HASH_SALT']:
+    if not filepath:
+        homedir = os.path.expandvars('$HOME')
+        basedir = os.path.dirname(__file__)
+        hostname = socket.gethostname().split('.')[0]
+        for filepath in [os.path.join(homedir, "{0}.yaml".format(hostname)),
+                         os.path.join(homedir, 'default.yaml'),
+                         os.path.join(basedir, "{0}.yaml".format(hostname)),
+                         os.path.join(basedir, 'default.yaml')]:
+            if os.path.exists(filepath) and \
+               os.path.isfile(filepath) and \
+               os.access(filepath, os.R_OK):
+                break
+        else:
+            raise IOError('no readable settings file found')
+    with open(filepath) as infile:
+        settings.update(yaml.safe_load(infile))
+    # Check settings
+    for key in ['BASE_URL', 'DB_SERVER', 'DB_DATABASE',
+                'COOKIE_SECRET', 'HASH_SALT',
+                'ACTIVATION_EMAIL', 'RESET_EMAIL']:
         if key not in settings:
-            raise KeyError("no '{0}' in settings".format(key))
+            raise KeyError("no '{0}' key in settings".format(key))
         if not settings[key]:
-            raise ValueError("setting {0} has invalid value".format(key))
+            raise ValueError("setting '{0}' has invalid value".format(key))
     if len(settings['COOKIE_SECRET']) < 10:
         raise ValueError('setting COOKIE_SECRET too short')
-
-def get_port(url):
-    "Get the port number (integer) from the URL."
-    parts = urlparse.urlparse(url)
-    items = parts.netloc.split(':')
-    if len(items) == 2:
-        return int(items[1])
-    if parts.scheme == 'http':
-        return 80
-    elif parts.scheme == 'https':
-        return 443
+    # Prepend source code base dir to relative filepaths
+    for key in ['ACTIVATION_EMAIL', 'RESET_EMAIL']:
+        if not os.path.isabs(settings[key]):
+            settings[key] = os.path.join(basedir, settings[key])
+    if settings.get('LOGGING_DEBUG'):
+        logging.basicConfig(level=logging.DEBUG)
     else:
-        raise ValueError("could not determine port from URL {0}".format(url))
+        logging.basicConfig(level=logging.INFO)
+    # Settings computable from others
+    settings['DB_SERVER_VERSION'] = couchdb.Server(settings['DB_SERVER']).version()
+    if 'PORT' not in settings:
+        parts = urlparse.urlparse(settings['BASE_URL'])
+        items = parts.netloc.split(':')
+        if len(items) == 2:
+            settings['PORT'] = int(items[1])
+        elif parts.scheme == 'http':
+            settings['PORT'] =  80
+        elif parts.scheme == 'https':
+            settings['PORT'] =  443
+        else:
+            raise ValueError('could not determine port from BASE_URL')
 
 def get_db():
     "Return the handle for the CouchDB database."

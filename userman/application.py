@@ -20,24 +20,11 @@ from userman.login import *
 from userman.api import *
 
 
-if settings.get('LOGGING_DEBUG'):
-    logging.basicConfig(level=logging.DEBUG)
-else:
-    logging.basicConfig(level=logging.INFO)
-
-settings['DB_SERVER_VERSION'] = couchdb.Server(settings['DB_SERVER']).version()
-
-
 class Home(RequestHandler):
     "Home page: Form to login or link to create new account."
 
     def get(self):
-        try:
-            utils.check_settings()
-        except (KeyError, ValueError), msg:
-            self.render('settings_error.html', message=str(msg))
-        else:
-            self.render('home.html', message='Blah', next=self.get_argument('next', ''))
+        self.render('home.html', next=self.get_argument('next', ''))
 
 
 class Version(RequestHandler):
@@ -91,20 +78,23 @@ handlers = \
      URL(r'/api/v1/doc/([a-f0-9]{32})', ApiDoc, name='api_doc'),
      ]
 
-application = tornado.web.Application(
-    handlers=handlers,
-    debug=settings['TORNADO_DEBUG'],
-    cookie_secret=settings['COOKIE_SECRET'],
-    ui_modules=uimodules,
-    template_path=constants.TEMPLATE_PATH,
-    static_path=constants.STATIC_PATH,
-    static_url_prefix=constants.STATIC_URL,
-    login_url=constants.LOGIN_URL)
-
 
 if __name__ == "__main__":
+    import sys
     import tornado.ioloop
-    port = settings.get('PORT', utils.get_port(settings['BASE_URL']))
-    application.listen(port)
-    logging.info("Userman web server on port %s", port)
+    try:
+        utils.load_settings(filepath=sys.argv[1])
+    except IndexError:
+        utils.load_settings()
+    application = tornado.web.Application(
+        handlers=handlers,
+        debug=settings['TORNADO_DEBUG'],
+        cookie_secret=settings['COOKIE_SECRET'],
+        ui_modules=uimodules,
+        template_path=constants.TEMPLATE_PATH,
+        static_path=constants.STATIC_PATH,
+        static_url_prefix=constants.STATIC_URL,
+        login_url=constants.LOGIN_URL)
+    application.listen(settings['PORT'])
+    logging.info("Userman web server on port %s", settings['PORT'])
     tornado.ioloop.IOLoop.instance().start()

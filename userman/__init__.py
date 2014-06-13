@@ -5,27 +5,15 @@ This implementation uses Tornado (3.2 or later) and CouchDB (1.0.1 or later).
 
 __version__ = '14.6'
 
-import os
-import socket
-import yaml
-
-
-def readfile(filename):
-    filepath = os.path.join(os.path.dirname(__file__), filename)
-    with open(filepath) as infile:
-        return infile.read()
-    
-settings = dict(HOSTNAME=socket.gethostname().split('.')[0],
-                BASE_URL='http://localhost:8880/',
-                TORNADO_DEBUG=True,
-                LOGGING_DEBUG=False,
+# These values are minimal default values appropriate for debugging.
+# The actual values are read in by utils.load_settings()
+settings = dict(BASE_URL='http://localhost:8880/',
                 DB_SERVER='http://localhost:5984/',
                 DB_DATABASE='userman',
+                TORNADO_DEBUG=True,
+                LOGGING_DEBUG=True,
                 API_KEYS=[],
+                ACTIVATION_EMAIL='messages/activation_email.txt',
+                RESET_EMAIL='messages/reset_email.txt',
                 ACTIVATION_PERIOD=7.0, # Unit: days
-                ACTIVATION_EMAIL_TEXT=readfile('messages/activation_email.txt'),
-                RESET_EMAIL_TEXT=readfile('messages/reset_email.txt'),
                 )
-
-with open("{0}.yaml".format(settings['HOSTNAME'])) as infile:
-    settings.update(yaml.safe_load(infile))

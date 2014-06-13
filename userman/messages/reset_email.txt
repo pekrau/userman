@@ -9,5 +9,5 @@ The Userman administrator
 
 
 Activation page: {url}
-User account (=email): {email}
+User account name (= email address): {email}
 Activation code (valid for {period} days): {activation_code}

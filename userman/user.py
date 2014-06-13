@@ -164,7 +164,7 @@ class UserApproveMixin(object):
         url_with_params = self.get_absolute_url('user_activate',
                                                 email=user['email'],
                                                 activation_code=activation_code)
-        text = settings['ACTIVATION_EMAIL_TEXT'].format(
+        text = open(settings['ACTIVATION_EMAIL']).read().format(
             period=settings['ACTIVATION_PERIOD'],
             url=url,
             url_with_params=url_with_params,
@@ -338,7 +338,7 @@ class UserReset(RequestHandler):
             url_with_params = self.get_absolute_url('user_activate',
                                                     email=user['email'],
                                                     activation_code=activation_code)
-            text = settings['RESET_EMAIL_TEXT'].format(
+            text = open(settings['RESET_EMAIL']).read().format(
                 period=settings['ACTIVATION_PERIOD'],
                 url=url,
                 url_with_params=url_with_params,

@@ -22,13 +22,21 @@ class Login(RequestHandler):
     def post(self):
         self.check_xsrf_cookie()
         try:
-            email = self.get_argument('email')
-            password = utils.hashed_password(self.get_argument('password'))
-            user = self.get_user(email, require_active=True)
-            if user.get('password') != password:
+            try:
+                email = self.get_argument('email')
+                if not email: raise ValueError
+                password = self.get_argument('password')
+                if not password: raise ValueError
+            except (tornado.web.MissingArgumentError, ValueError):
+                raise ValueError('missing user email or password')
+            try:
+                user = self.get_user(email, require_active=True)
+            except tornado.web.HTTPError, msg:
+                raise ValueError('invalid user email or password')
+            if user.get('password') != utils.hashed_password(password):
                 changed = dict(login_failure=self.request.remote_ip)
                 utils.log(self.db, user, changed=changed)
-                raise ValueError('invalid password')
+                raise ValueError('invalid user email or password')
             self.set_secure_cookie(constants.USER_COOKIE_NAME, email)
             self._user = user
             url = self.get_argument('next', None)
@@ -41,7 +49,7 @@ class Login(RequestHandler):
                 else:
                     url = self.reverse_url('user', email)
             self.redirect(url)
-        except (tornado.web.MissingArgumentError, ValueError), msg:
+        except ValueError, msg:
             logging.debug("login error: %s", msg)
             self.render('login.html',
                         error=str(msg),
