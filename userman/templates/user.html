@@ -108,9 +108,7 @@ User {{ user['email'] }}
 	    {% module Service(service) %}
 	  </td>
 	  <td>
-	    <a href="{{ reverse_url('service', service['href']) }}">
-	      {{ service['href'] }}
-	    </a>
+	    <a href="{{ service['href'] }}">{{ service['href'] }}</a>
 	  </td>
 	  {% set apikey = user['apikeys'].get(service['name']) %}
 	  {% if apikey %}

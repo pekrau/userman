@@ -53,10 +53,6 @@ def load_settings(filepath=None):
     for key in ['ACTIVATION_EMAIL', 'RESET_EMAIL']:
         if not os.path.isabs(settings[key]):
             settings[key] = os.path.join(basedir, settings[key])
-    if settings.get('LOGGING_DEBUG'):
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
     # Settings computable from others
     settings['DB_SERVER_VERSION'] = couchdb.Server(settings['DB_SERVER']).version()
     if 'PORT' not in settings:
@@ -70,6 +66,12 @@ def load_settings(filepath=None):
             settings['PORT'] =  443
         else:
             raise ValueError('could not determine port from BASE_URL')
+    # Set logging level
+    if settings.get('LOGGING_DEBUG'):
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+    logging.info("settings from %s", filepath)
 
 def get_db():
     "Return the handle for the CouchDB database."

@@ -6,7 +6,7 @@ from setuptools import setup
 os.system("pandoc -o README.txt -f markdown -t rst README.md")
 
 setup(name='userman',
-      version='14.5',
+      version='14.6',
       description='Simple account handling system for use with web services.',
       license='MIT',
       author='Per Kraulis',
