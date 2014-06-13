@@ -37,6 +37,7 @@ def load_settings(filepath=None):
                 break
         else:
             raise IOError('no readable settings file found')
+    logging.info("reading settings from %s", filepath)
     with open(filepath) as infile:
         settings.update(yaml.safe_load(infile))
     # Check settings
@@ -66,12 +67,9 @@ def load_settings(filepath=None):
             settings['PORT'] =  443
         else:
             raise ValueError('could not determine port from BASE_URL')
-    # Set logging level
+    # Set debug logging
     if settings.get('LOGGING_DEBUG'):
         logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
-    logging.info("settings from %s", filepath)
 
 def get_db():
     "Return the handle for the CouchDB database."
