@@ -44,7 +44,12 @@ def create_user_admin(db):
 
 
 if __name__ == '__main__':
+    import sys
     response = raw_input('about to delete everything; really sure? [n] > ')
+    try:
+        utils.load_settings(filepath=sys.argv[1])
+    except IndexError:
+        utils.load_settings()
     if utils.to_bool(response):
         db = utils.get_db()
         wipeout_database(db)

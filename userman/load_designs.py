@@ -32,6 +32,11 @@ def load_designs(db, root='designs'):
 
 
 if __name__ == '__main__':
+    import sys
     from userman import utils
+    try:
+        utils.load_settings(filepath=sys.argv[1])
+    except IndexError:
+        utils.load_settings()
     db = utils.get_db()
     load_designs(db)
