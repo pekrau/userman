@@ -74,6 +74,10 @@ def undump(db, filename):
 
 if __name__ == '__main__':
     import sys
+    try:
+        utils.load_settings(filepath=sys.argv[1])
+    except IndexError:
+        utils.load_settings()
     db = utils.get_db()
     if len(sys.argv) == 2:
         filename = sys.argv[1]
