@@ -45,23 +45,24 @@ Edit User {{ user['email'] }}
 	</td>
 	<td class="description">
 	  The username is an optional additional identifier for the account.
+	  Must be unique, if given.
 	  It is available mostly for backwards compatibility reasons.
 	</td>
       </tr>
 
+      {% if is_admin %}
       <tr>
 	<th>Role</th>
 	<td>{% module Icon('mandatory') %}</td>
 	<td>
-	  {% if is_admin %}
           {% for role in constants.ROLES %}
           {% set checked = role == user['role'] and 'checked' or '' %}
           <input type='radio' name='role' value="{{ role }}" {{ checked }}>
-	  {{ role }}
-	  {% end %}
+	  {{ role }} <br>
 	  {% end %}
 	</td>
       </tr>
+      {% end %}
 
       <tr>
 	<th>Full name</th>

@@ -3,4 +3,5 @@ recursive-include userman/designs *
 recursive-include userman/static *
 recursive-include userman/templates *
 recursive-include userman/messages *
+recursive-include userman/scripts *
 include userman/example.yaml
