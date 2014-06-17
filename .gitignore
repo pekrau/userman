@@ -4,3 +4,4 @@
 dist
 userman.egg-info
 userman/dump.tar*
+userman/*.log
