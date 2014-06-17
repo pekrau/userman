@@ -3,9 +3,10 @@ BASE_URL: 'http://localhost:8880/'
 DB_SERVER: 'http://username:password@localhost:5984/'
 HASH_SALT: 'some-long_secret_hash-key_#%"!'
 COOKIE_SECRET: 'some-other-secret-encryption-key-()/&%'
-# Debugging levels.
+# Logging and debug.
 TORNADO_DEBUG: True
 LOGGING_DEBUG: True
+LOGGING_FILENAME: 'userman.log'
 # Access keys from other services.
 API_KEYS:
   - 'This is a secret key 123! And a-b-c.'

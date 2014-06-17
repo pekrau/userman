@@ -82,7 +82,6 @@ handlers = \
 if __name__ == "__main__":
     import sys
     import tornado.ioloop
-    logging.basicConfig(level=logging.INFO)
     try:
         utils.load_settings(filepath=sys.argv[1])
     except IndexError:
