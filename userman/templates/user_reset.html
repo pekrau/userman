@@ -27,6 +27,15 @@ User
 
 {% block content %}
 
+<p>
+  If you have forgotten your password, then you need to reset your account
+  password, which means that your account will no longer have a password.
+</p>
+<p>
+  An activation code will be sent to your email address, with instructions
+  on how to set your new password.
+</p>
+
 <form action="{{ reverse_url('user_reset') }}" method="POST">
   {% module xsrf_form_html() %}
 

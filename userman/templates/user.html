@@ -72,22 +72,22 @@ User {{ user['email'] }}
 
   <tr>
     <th>Full name</th>
-    <td>{{ user.get('fullname') or '' }}</td>
+    <td>{{ user.get('fullname') or '-' }}</td>
   </tr>
 
   <tr>
     <th>University</th>
-    <td>{{ user.get('university') or '' }}</td>
+    <td>{{ user.get('university') or '-' }}</td>
   </tr>
 
   <tr>
     <th>Department</th>
-    <td>{{ user.get('department') or '' }}</td>
+    <td>{{ user.get('department') or '-' }}</td>
   </tr>
 
   <tr>
     <th>Country</th>
-    <td>{{ user.get('country') or '' }}</td>
+    <td>{{ user.get('country') or '-' }}</td>
   </tr>
 
   <tr>
@@ -136,8 +136,12 @@ User {{ user['email'] }}
   <tr>
     <th>Teams (leader of)</th>
     <td>
-      {% for team in leading %}
-      {% module Team(team) %}
+      {% if leading %}
+        {% for team in leading %}
+        {% module Team(team) %}
+        {% end %}
+      {% else %}
+        -
       {% end %}
     </td>
   </tr>
@@ -145,8 +149,12 @@ User {{ user['email'] }}
   <tr>
     <th>Teams (member of)</th>
     <td>
-      {% for team in teams %}
-      {% module Team(team) %}
+      {% if teams %}
+        {% for team in teams %}
+        {% module Team(team) %}
+        {% end %}
+      {% else %}
+        -
       {% end %}
     </td>
   </tr>

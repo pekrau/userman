@@ -2,17 +2,132 @@
 
 {% extends "base.html" %}
 
+
+{% block head_title %}
+User account manager
+{% if current_user %}
+{{ current_user['email'] }}
+{% end %}
+{% end %}
+
+{% block title %}
+User account manager
+{% if current_user %}
+{% module Icon('user', label=True, title=current_user['email']) %}
+{% end %}
+{% end %}
+
+{% block actions %}
+{% if current_user %}
+<form action="{{ reverse_url('user', current_user['email']) }}" method="GET">
+  {% module Submit('user', title='User info') %}
+</form>
+<form action="{{ reverse_url('logout') }}" method="POST">
+  {% module xsrf_form_html() %}
+  {% module Submit('logout') %}
+</form>
+{% end %}
+{% end %}
+
 {% block content %}
 
 {% if current_user %}
 
-<form action="{{ reverse_url('logout') }}" method="POST">
-  {% module xsrf_form_html() %}
-  <fieldset>
-    <legend>Logout from account {{ current_user['email'] }}</legend>
-    {% module Submit('logout') %}
-  </fieldset>
-</form>
+{% if is_admin and pending_count %}
+<h3>
+  {% module Icon('pending') %}
+  <a href="{{ reverse_url('users_pending') }}">
+    {{ pending_count }} user accounts are pending approval.
+  </a>
+</h3>
+{% end %}
+
+<table class="fields">
+
+  <tr>
+    <th>Email</th>
+    <td>{{ current_user['email'] }}</td>
+  </tr>
+
+  <tr>
+    <th>Username</th>
+    <td>{{ current_user.get('username') or '-' }}</td>
+  </tr>
+
+  <tr>
+    <th>Role</th>
+    <td>
+      {% if current_user['role'] == 'admin' %}
+        {% module Icon('admin', label=True) %}
+      {% elif current_user['role'] == 'user' %}
+        {% module Icon('user', label=True) %}
+      {% else %}
+        {{ current_user['role'] }}
+      {% end %}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Services</th>
+    <td>
+      <table class="list">
+	<tr class="list">
+	  <th>Name</th>
+	  <th>URL</th>
+	  <th>
+	    {% module Icon('apikey', title='API key', label=True) %}
+	  </th>
+	  <th>Modified</th>
+	</tr>
+	{% for service in services %}
+	<tr>
+	  <td class="nobr">
+	    {% module Service(service) %}
+	  </td>
+	  <td>
+	    <a href="{{ service['href'] }}">{{ service['href'] }}</a>
+	  </td>
+	  {% set apikey = current_user['apikeys'].get(service['name']) %}
+	  {% if apikey %}
+	  <td class="code">{{ apikey['value'] }}</td>
+	  <td class="localtime">{{ apikey['modified'] }}</td>
+	  {% else %}
+	  <td>-</td>
+	  <td>-</td>
+	  {% end %}
+	</tr>
+	{% end %}
+      </table>
+    </td>
+  </tr>
+
+  <tr>
+    <th>Teams (leader of)</th>
+    <td>
+      {% if leading %}
+        {% for team in leading %}
+        {% module Team(team) %}
+        {% end %}
+      {% else %}
+        -
+      {% end %}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Teams (member of)</th>
+    <td>
+      {% if teams %}
+        {% for team in teams %}
+        {% module Team(team) %}
+        {% end %}
+      {% else %}
+        -
+      {% end %}
+    </td>
+  </tr>
+
+</table>
 
 {% else %}
 

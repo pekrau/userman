@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>{% block head_title %}User manager{% end %}</title>
+    <title>{% block head_title %}User account manager{% end %}</title>
     <link rel="shortcut icon" href="{{ static_url('favicon.ico') }}" type="image/png">
   </head>
   <link rel="stylesheet" type="text/css" href="{{ static_url('standard.css') }}">
@@ -20,7 +20,7 @@
 	</tr>
 	<tr>
 	  <td class="title">
-	    {% block title %}User manager{% end %}
+	    {% block title %}User account manager{% end %}
 	  </td>
 	</tr>
       </table>
@@ -46,38 +46,31 @@
 	<div><a href="{{ reverse_url('service_create') }}">Create</a></div>
       </div>
       {% end %}
-      <div class="bold">User</div>
-      <div class="menu1">
+      <div class="bold">
 	{% if current_user %}
-	<div class="nobr">
-	  <a href="{{ reverse_url('user', current_user['email']) }}">My account</a>
-	</div>
+	  <a href="{{ reverse_url('user', current_user['email']) }}">User</a>
 	{% else %}
-	<div><a href="{{ reverse_url('user_create') }}">Create</a></div>
+	  User
+	{% end %}
+      </div>
+      <div class="menu1">
+	{% if not current_user or is_admin %}
+	  <div><a href="{{ reverse_url('user_create') }}">Create</a></div>
+	{% end %}
 	<div><a href="{{ reverse_url('user_activate')}}">Activate</a></div>
-	{% end %}
 	<div><a href="{{ reverse_url('user_reset')}}">Reset</a></div>
-	{% if is_admin %}
-	<div><a href="{{ reverse_url('user_create')}}">Create</a></div>
-	{% end %}
       </div>
       {% if is_admin %}
       <div><a href="{{ reverse_url('users') }}">Users</a></div>
       <div class="menu1">
-	<div class="nobr">
-	  <a href="{{ reverse_url('users_pending') }}">
-	    {% if any_pending %}
-	    {% module Icon('pending', label=True) %}
-	    {% else %}
-	    Pending
-	    {% end %}
-	  </a>
+	<div>
+	  <a href="{{ reverse_url('users_pending') }}">Pending</a>
 	</div>
 	<div><a href="{{ reverse_url('users_blocked') }}">Blocked</a></div>
       </div>
       {% end %}
-      <div><a href="{{ reverse_url('teams') }}">Teams</a></div>
       {% if current_user %}
+      <div><a href="{{ reverse_url('teams') }}">Teams</a></div>
       <div class="menu1">
 	<div><a href="{{ reverse_url('team_create') }}">Create</a></div>
       </div>

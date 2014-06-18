@@ -80,6 +80,13 @@ textarea {width: 40em;
 
 img.icon {vertical-align: middle; }
 
+caption {font-size: large;
+	 font-weight: bold;
+	 text-align: left;
+	 margin-left: 5em;
+	 margin-bottom: 0.5em;
+	}
+
 table.header {float: left; }
 
 p.description {font-style: normal;

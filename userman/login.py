@@ -39,15 +39,7 @@ class Login(RequestHandler):
                 raise ValueError('invalid user email or password')
             self.set_secure_cookie(constants.USER_COOKIE_NAME, email)
             self._user = user
-            url = self.get_argument('next', None)
-            if not url:
-                if self.is_admin():
-                    if len(list(self.db.view('user/pending'))):
-                        url = self.reverse_url('users_pending')
-                    else:
-                        url = self.reverse_url('users')
-                else:
-                    url = self.reverse_url('user', email)
+            url = self.get_argument('next', self.reverse_url('home'))
             self.redirect(url)
         except ValueError, msg:
             logging.debug("login error: %s", msg)

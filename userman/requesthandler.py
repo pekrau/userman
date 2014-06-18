@@ -30,10 +30,6 @@ class RequestHandler(tornado.web.RequestHandler):
         result['error'] = None
         result['current_user'] = self.get_current_user()
         result['is_admin'] = self.is_admin()
-        if result['is_admin']:
-            result['any_pending'] = len(list(self.db.view('user/pending')))
-        else:
-            result['any_pending'] = False
         result['self_url'] = self.request.uri
         return result
 
