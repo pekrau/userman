@@ -54,10 +54,23 @@ Edit Service
 	<th>URL</th>
 	<td>{% module Icon('mandatory') %}</td>
 	<td>
-	  <input type="url" size="40" name="href" value="{{ service['href'] }}">
+	  <input type="url" name="href" value="{{ service['href'] }}">
 	</td>
 	<td class="description">
 	  The URL of the home page of the service.
+	</td>
+      </tr>
+
+      <tr>
+	<th>Notification URL</th>
+	<td></td>
+	<td>
+	  <input type="url" name="notify_href" value="{{ service.get('notify_href') or '' }}">
+	</td>
+	<td class="description">
+	  The URL of the notification end-point of the service.
+	  This is called with information about any relevant event
+	  in this service. Errors when this URL is called are ignored.
 	</td>
       </tr>
 

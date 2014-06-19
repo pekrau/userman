@@ -48,6 +48,8 @@ button.invisible {border:none;
 textarea {width: 40em;
 	  height: 4em;}
 
+input[type="url"] {width: 30em; }
+
 .nobr {white-space: nowrap; }
 .pre  {white-space: pre; }
 

@@ -85,6 +85,7 @@ class ApiAuth(ApiRequestHandler):
 class ApiUser(ApiAuth):
     """Return the user information given the email and service as JSON data.
     Does not need, nor checks, the password.
+    But still checks the Userman API key!
     Return only the API key for the requested service.
     Exclude all information about other services.
     Return HTTP 400 if missing parameter or invalid JSON.

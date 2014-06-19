@@ -60,7 +60,8 @@ class ServiceCreate(RequestHandler):
         with ServiceSaver(rqh=self) as saver:
             saver['name'] = name
             saver['description'] = self.get_argument('description', '')
-            saver['href'] = self.get_argument('href', '')
+            saver['href'] = self.get_argument('href')
+            saver['notify_href'] = self.get_argument('notify_href', '')
             saver['status'] = self.get_argument('status', constants.BLOCKED)
             saver['public'] = self.get_argument('public', False)
         self.redirect(self.reverse_url('service', name))
@@ -83,7 +84,8 @@ class ServiceEdit(RequestHandler):
         with ServiceSaver(doc=service, rqh=self) as saver:
             saver['name'] = self.get_argument('name')
             saver['description'] = self.get_argument('description', '')
-            saver['href'] = self.get_argument('href', '')
+            saver['href'] = self.get_argument('href', service['href'])
+            saver['notify_href'] = self.get_argument('notify_href', '')
             saver['status'] = self.get_argument('status', service['status'])
             saver['public'] = self.get_argument('public',
                                                 service.get('public', False))

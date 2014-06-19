@@ -53,6 +53,13 @@ Service {{ service['name'] }}
   </tr>
 
   <tr>
+    <th>Notification URL</th>
+    <td>
+      {{ service.get('notify_href') or '-' }}
+    </td>
+  </tr>
+
+  <tr>
     <th>Status</th>
     <td>{% module Icon(service['status'], label=True) %}</td>
   </tr>
