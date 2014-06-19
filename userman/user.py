@@ -105,12 +105,10 @@ class User(UserMixin, RequestHandler):
         self.check_access_user(user)
         services = [self.get_service(n) for n in user['services']]
         teams = [self.get_team(n) for n in user['teams']]
-        leading = [t for t in teams if email in t['leaders']]
         self.render('user.html',
                     user=user,
                     services=services,
                     teams=teams,
-                    leading=leading,
                     logs=self.get_logs(user['_id']))
 
 

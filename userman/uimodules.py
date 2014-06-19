@@ -32,13 +32,13 @@ class Doc(tornado.web.UIModule):
         """<img src="{src}" class="icon" alt="{title}" title="{title}">""" \
         """ {title}</a>"""
 
-    def render(self, doc):
+    def render(self, doc, title=None):
         self.doc = doc
         return self.template.format(
             url=self.handler.reverse_url(self.__class__.__name__.lower(),
                                          doc[self.keyfield]),
             src=self.handler.static_url(self.iconfilename),
-            title=self.get_title())
+            title=title or self.get_title())
 
     def get_title(self):
         try:

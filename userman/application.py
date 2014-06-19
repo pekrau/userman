@@ -24,14 +24,12 @@ class Home(RequestHandler):
     "Home page: Form to login or link to create new account."
 
     def get(self):
-        services = teams = leading = []
+        services = teams = []
         pending_count = 0
         if self.current_user:
             services = [self.get_service(n)
                         for n in self.current_user['services']]
             teams = [self.get_team(n) for n in self.current_user['teams']]
-            email = self.current_user['email']
-            leading = [t for t in teams if email in t['leaders']]
             if self.is_admin():
                 try:
                     view = self.db.view('user/count')
@@ -41,7 +39,6 @@ class Home(RequestHandler):
         self.render('home.html',
                     services=services,
                     teams=teams,
-                    leading=leading,
                     pending_count=pending_count,
                     next=self.get_argument('next', ''))
 

@@ -134,24 +134,15 @@ User {{ user['email'] }}
   </tr>
 
   <tr>
-    <th>Teams (leader of)</th>
-    <td>
-      {% if leading %}
-        {% for team in leading %}
-        {% module Team(team) %}
-        {% end %}
-      {% else %}
-        -
-      {% end %}
-    </td>
-  </tr>
-
-  <tr>
-    <th>Teams (member of)</th>
+    <th>Teams</th>
     <td>
       {% if teams %}
         {% for team in teams %}
-        {% module Team(team) %}
+          {% if current_user['email'] in team['leaders'] %}
+            {% module Team(team, title="{0} (leader)".format(team['name'])) %}
+          {% else %}
+            {% module Team(team) %}
+          {% end %}
         {% end %}
       {% else %}
         -
