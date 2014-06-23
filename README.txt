@@ -18,6 +18,18 @@ only mechanism used for authentication in the API. The API token is
 specific for the user account, and is available in the user page for the
 account.
 
+Design notes
+~~~~~~~~~~~~
+
+The API is designed such that all data sent to and received from the
+interface is JSON containing pure application data. Metadata, such as
+the API access token, is passed as a HTTP header item, so as not to
+clutter up the data namespace.
+
+Tip: Use the `requests <http://docs.python-requests.org/en/latest/>`_
+package for all HTTP client code. It is way better than the urllib2
+package in the standard Python distribution.
+
 Development server
 ------------------
 
