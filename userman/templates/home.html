@@ -67,40 +67,6 @@ User account manager
   </tr>
 
   <tr>
-    <th>Services</th>
-    <td>
-      <table class="list">
-	<tr class="list">
-	  <th>Name</th>
-	  <th>URL</th>
-	  <th>
-	    {% module Icon('apikey', title='API key', label=True) %}
-	  </th>
-	  <th>Modified</th>
-	</tr>
-	{% for service in services %}
-	<tr>
-	  <td class="nobr">
-	    {% module Service(service) %}
-	  </td>
-	  <td>
-	    <a href="{{ service['href'] }}">{{ service['href'] }}</a>
-	  </td>
-	  {% set apikey = current_user['apikeys'].get(service['name']) %}
-	  {% if apikey %}
-	  <td class="code">{{ apikey['value'] }}</td>
-	  <td class="localtime">{{ apikey['modified'] }}</td>
-	  {% else %}
-	  <td>-</td>
-	  <td>-</td>
-	  {% end %}
-	</tr>
-	{% end %}
-      </table>
-    </td>
-  </tr>
-
-  <tr>
     <th>Teams</th>
     <td>
       {% if teams %}
@@ -114,6 +80,28 @@ User account manager
       {% else %}
         -
       {% end %}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Services</th>
+    <td>
+      <table class="list">
+	<tr class="list">
+	  <th>Name</th>
+	  <th>URL</th>
+	  <th>Description</th>
+	</tr>
+	{% for service in services %}
+	<tr>
+	  <td class="nobr">
+	    {% module Service(service) %}
+	  </td>
+	  <td><a href="{{ service['href'] }}">{{ service['href'] }}</a></td>
+	  <td>{{ service.get('description') or '-' }}</td>
+	</tr>
+	{% end %}
+      </table>
     </td>
   </tr>
 

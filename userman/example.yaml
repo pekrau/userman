@@ -7,9 +7,9 @@ COOKIE_SECRET: 'some-other-secret-encryption-key-()/&%'
 TORNADO_DEBUG: True
 LOGGING_DEBUG: True
 LOGGING_FILENAME: 'userman.log'
-# Access keys from other services.
-API_KEYS:
-  - 'This is a secret key 123! And a-b-c.'
+# API access tokens from other services.
+API_TOKENS:
+  - 'This is a secret token 123! And a-b-c.'
 # Email server info.
 EMAIL:
 # Simplest case:

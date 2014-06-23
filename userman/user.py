@@ -21,7 +21,6 @@ class UserSaver(DocumentSaver):
     def initialize(self):
         self['status'] = constants.PENDING
         self['services'] = []
-        self['apikeys'] = {}
         self['teams'] = []
         self['created'] = utils.timestamp()
 
@@ -69,21 +68,6 @@ class UserSaver(DocumentSaver):
         if value not in constants.STATUSES:
             raise ValueError('invalid status value')
 
-    def convert_services(self, value):
-        "Set the list of services the user may access."
-        old_services = set(self.doc.get('services', []))
-        for service in value:
-            if service not in old_services:
-                self.set_apikey(service)
-        return sorted(value)
-        
-    def set_apikey(self, servicename):
-        "Reset the API key for the service of the given name."
-        apikeys = self.doc.get('apikeys', {}).copy()
-        apikeys[servicename] = dict(value=utils.get_iuid(),
-                                    modified=utils.timestamp())
-        self['apikeys'] = apikeys
-        
 
 class UserMixin(object):
 
@@ -372,19 +356,6 @@ class UserReset(RequestHandler):
         except (tornado.web.HTTPError, ValueError), msg:
             logging.debug("account reset error: %s", msg)
         self.redirect(self.reverse_url('home'))
-
-
-class UserApiKey(RequestHandler):
-    "Set a new API key for a service for the user."
-
-    @tornado.web.authenticated
-    def post(self, name):
-        self.check_xsrf_cookie()
-        user = self.get_user(name)
-        service = self.get_service(self.get_argument('service'))
-        with UserSaver(doc=user, rqh=self) as saver:
-            saver.set_apikey(service['name'])
-        self.redirect(self.reverse_url('user', user['email']))
 
 
 class Users(RequestHandler):

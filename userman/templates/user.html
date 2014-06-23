@@ -91,49 +91,6 @@ User {{ user['email'] }}
   </tr>
 
   <tr>
-    <th>Services</th>
-    <td>
-      <table class="list">
-	<tr class="list">
-	  <th>Name</th>
-	  <th>URL</th>
-	  <th>
-	    {% module Icon('apikey', title='API key', label=True) %}
-	  </th>
-	  <th>Modified</th>
-	</tr>
-	{% for service in services %}
-	<tr>
-	  <td class="nobr">
-	    {% module Service(service) %}
-	  </td>
-	  <td>
-	    <a href="{{ service['href'] }}">{{ service['href'] }}</a>
-	  </td>
-	  {% set apikey = user['apikeys'].get(service['name']) %}
-	  {% if apikey %}
-	  <td class="code">{{ apikey['value'] }}</td>
-	  <td class="localtime">{{ apikey['modified'] }}</td>
-	  {% else %}
-	  <td>-</td>
-	  <td>-</td>
-	  {% end %}
-	  <td>
-	    <form action="{{ reverse_url('user_apikey', user['email']) }}"
-		  method="POST">
-	      {% module xsrf_form_html() %}
-	      <input type="hidden" name="service" value="{{ service['name'] }}">
-	      {% module Submit('apikey_new', title='New API key',
-	      onclick="return confirm('API key must also be updated for the user account in the service.');") %}
-	    </form>
-	  </td>
-	</tr>
-	{% end %}
-      </table>
-    </td>
-  </tr>
-
-  <tr>
     <th>Teams</th>
     <td>
       {% if teams %}
@@ -147,6 +104,28 @@ User {{ user['email'] }}
       {% else %}
         -
       {% end %}
+    </td>
+  </tr>
+
+  <tr>
+    <th>Services</th>
+    <td>
+      <table class="list">
+	<tr class="list">
+	  <th>Name</th>
+	  <th>URL</th>
+	  <th>Description</th>
+	</tr>
+	{% for service in services %}
+	<tr>
+	  <td class="nobr">
+	    {% module Service(service) %}
+	  </td>
+	  <td><a href="{{ service['href'] }}">{{ service['href'] }}</a></td>
+	  <td>{{ service.get('description') or '-' }}</td>
+	</tr>
+	{% end %}
+      </table>
     </td>
   </tr>
 

@@ -66,7 +66,6 @@ handlers = \
      URL(r'/user/([^/]+)/approve', UserApprove, name='user_approve'),
      URL(r'/user/([^/]+)/block', UserBlock, name='user_block'),
      URL(r'/user/([^/]+)/unblock', UserUnblock, name='user_unblock'),
-     URL(r'/user/([^/]+)/apikey', UserApiKey, name='user_apikey'),
      URL(r'/user/([^/]+)/acknowledge',UserAcknowledge, name='user_acknowledge'),
      URL(r'/user', UserCreate, name='user_create'),
      URL(r'/users', Users, name='users'),

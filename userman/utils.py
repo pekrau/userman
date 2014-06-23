@@ -144,18 +144,6 @@ def hashed_password(password):
     m.update(password)
     return m.hexdigest()
 
-def cleanup_doc(doc):
-    """Make a dictionary of the database document,
-    removing '_rev' and changing '_id' to 'iuid'."""
-    result = dict(doc)
-    del result['_rev']
-    try:
-        del result['password']
-    except KeyError:
-        pass
-    result['iuid'] = result.pop('_id')
-    return result
-
 def log(db, doc, changed={}, deleted={}, current_user=None):
     "Create a log entry for the given document."
     entry = dict(_id=get_iuid(),

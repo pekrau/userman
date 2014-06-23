@@ -13,38 +13,49 @@ from .requesthandler import RequestHandler
 
 
 class ApiRequestHandler(RequestHandler):
-    "Check API key unless logged in."
+    "Check API token unless logged in."
 
     def prepare(self):
         super(ApiRequestHandler, self).prepare()
-        self.check_api_key()
+        self.check_api_token()
 
-    def check_api_key(self):
-        """Check the API key given in the header.
-        Return HTTP 401 if invalid or missing key."""
+    def check_api_token(self):
+        """Check the API token given in the header.
+        Return HTTP 401 if invalid or missing token."""
         if self.get_current_user(): return
         try:
-            api_key = self.request.headers['X-Userman-API-key']
+            api_token = self.request.headers['X-Userman-API-token']
         except KeyError:
-            self.send_error(401, reason='API key missing')
+            self.send_error(401, reason='API token missing')
         else:
-            if api_key not in settings['API_KEYS']:
-                self.send_error(401, reason='invalid API key')
+            if api_token not in settings['API_TOKENS']:
+                self.send_error(401, reason='invalid API token')
 
 
 class ApiDoc(ApiRequestHandler):
-    "Return a document as is, but without '_rev' and change '_id' to 'iuid'."
+    """Return a document as is.
+    Change '_id' to 'iuid'.
+    Remove '_rev' and 'password'.
+    """
 
     def get(self, iuid):
         try:
-            self.write(utils.cleanup_doc(self.db[iuid]))
+            doc = self.db[iuid]
         except couchdb.http.ResourceNotFound:
             self.send_error(404, reason='no such item')
+        else:
+            # Remove sensitive or irrelevant items
+            doc['iuid'] = doc.pop('_id')
+            del doc['_rev']
+            try:
+                del doc['password']
+            except KeyError:
+                pass
+            self.write(doc)
 
 
 class ApiAuth(ApiRequestHandler):
     """Return the user information given the password and service as JSON data.
-    Return only the API key for the requested service.
     Exclude all information about other services.
     Return HTTP 400 if missing parameter or invalid JSON.
     Return HTTP 401 if wrong password or service.
@@ -64,13 +75,11 @@ class ApiAuth(ApiRequestHandler):
             raise tornado.web.HTTPError(400, reason='no service specified')
         if service not in user['services']:
             raise tornado.web.HTTPError(401, reason='service not enabled')
-        user = utils.cleanup_doc(user)
-        try:
-            apikeys = user.pop('apikeys')
-            user['apikey'] = apikeys[service]['value']
-        except KeyError:
-            user['apikey'] = None
-        user.pop('services', None)
+        # Remove sensitive or irrelevant items
+        user['iuid'] = user.pop('_id')
+        del user['_rev']
+        del user['password']
+        del user['services']
         self.write(user)
 
     def check_password(self, user, data):
@@ -85,8 +94,7 @@ class ApiAuth(ApiRequestHandler):
 class ApiUser(ApiAuth):
     """Return the user information given the email and service as JSON data.
     Does not need, nor checks, the password.
-    But still checks the Userman API key!
-    Return only the API key for the requested service.
+    NOTE: Will still check the Userman API token!
     Exclude all information about other services.
     Return HTTP 400 if missing parameter or invalid JSON.
     Return HTTP 404 if wrong service."""
