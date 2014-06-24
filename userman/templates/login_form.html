@@ -1,5 +1,30 @@
 {# Login form to be included in a page. #}
 
+{% if not current_user %}
+
+<p>
+  {% module Icon('action') %}
+  <a href="{{ reverse_url('user_create') }}">
+    Create a new user account.
+  </a>
+</p>
+
+<p>
+  {% module Icon('action') %}
+  <a href="{{ reverse_url('user_activate') }}">
+    Activate a user account (after approval or password reset).
+  </a>
+</p>
+
+<p>
+  {% module Icon('action') %}
+  <a href="{{ reverse_url('user_reset') }}">
+    Reset the password of an account.
+  </a>
+</p>
+
+{% end %}
+
 <form action="{{ reverse_url('login') }}" method="POST">
   {% module xsrf_form_html() %}
 
@@ -35,28 +60,3 @@
   </fieldset>
 
 </form>
-
-{% if not current_user %}
-
-<h3>
-  {% module Icon('action') %}
-  <a href="{{ reverse_url('user_create') }}">
-    Create a new user account.
-  </a>
-</h3>
-
-<h3>
-  {% module Icon('action') %}
-  <a href="{{ reverse_url('user_activate') }}">
-    Activate a user account (after approval or password reset).
-  </a>
-</h3>
-
-<h3>
-  {% module Icon('action') %}
-  <a href="{{ reverse_url('user_reset') }}">
-    Reset the password of an account.
-  </a>
-</h3>
-
-{% end %}
