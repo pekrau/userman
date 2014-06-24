@@ -1,6 +1,9 @@
 " Userman: Load all CouchDB database design documents. "
 
 import os
+import logging
+
+import couchdb
 
 
 def load_designs(db, root='designs'):
@@ -23,12 +26,19 @@ def load_designs(db, root='designs'):
             else:
                 key = 'map'
             views.setdefault(name, dict())[key] = code
-        doc = dict(_id="_design/%s" % design, views=views)
+        id = "_design/%s" % design
         try:
-            doc['_rev'] = db.revisions(doc['_id']).next().rev
-        except StopIteration:
-            pass
-        db.save(doc)
+            doc = db[id]
+        except couchdb.http.ResourceNotFound:
+            logging.debug("loading %s", id)
+            db.save(dict(_id=id, views=views))
+        else:
+            if doc['views'] != views:
+                doc['views'] = views
+                logging.debug("updating %s", id)
+                db.save(doc)
+            else:
+                logging.debug("no change %s", id)
 
 
 if __name__ == '__main__':
