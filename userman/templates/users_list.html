@@ -1,0 +1,48 @@
+{# List of users in table format #}
+
+<table class="list">
+
+  <tr>
+    <th>Email</th>
+    <th>Username</th>
+    <th>Name</th>
+    <th>Role</th>
+    <th>Status</th>
+    <th>Services</th>
+    <th>Created</th>
+    <th>Modified</th>
+  </tr>
+
+  {% if not users %}
+
+  <tr>
+    <td colspan="2"><i>[none]</i></td>
+  </tr>
+
+  {% else %}
+
+  {% for user in users %}
+  <tr>
+    <td>
+      <a href="{{ reverse_url('user', user['email']) }}">{{ user['email'] }}</a>
+    </td>
+    <td>{{ user.get('username') or '-' }}</td>
+    <td>{{ user.get('name') or '' }}</td>
+    <td>{{ user['role'] }}</td>
+    <td>{% module Icon(user['status'], label=True) %}</td>
+    <td>
+      {% for service in user['services'] %}
+      <div class="nobr">
+	{% module Icon('service') %}
+	<a href="{{ reverse_url('service', service) }}">{{ service }}</a>
+      </div>
+      {% end %}
+    </td>
+    <td class="localtime">{{ user['created'] }}</td>
+    <td class="localtime">{{ user['modified'] }}</td>
+  </tr>
+  {% end %}
+
+  {% end %}
+
+</table>

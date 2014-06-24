@@ -36,7 +36,7 @@ def create_user_admin(db):
             saver['password'] = password    # Hashing done inside saver.
             saver['role'] = constants.ADMIN
             saver['status'] = constants.ACTIVE
-            saver['fullname'] = raw_input('admin full name (optional) > ')
+            saver['name'] = raw_input('admin personal name (optional) > ')
             saver['teams'] = []
         return 'created admin user'
     else:

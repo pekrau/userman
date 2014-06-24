@@ -65,14 +65,14 @@ Edit User {{ user['email'] }}
       {% end %}
 
       <tr>
-	<th>Full name</th>
+	<th>Name</th>
 	<td>{% module Icon('mandatory') %}</td>
 	<td>
-	  <input type="text" name="fullname" size="40"
-		 value="{{ user.get('fullname') or ''}}">
+	  <input type="text" name="name" size="40"
+		 value="{{ user.get('name') or ''}}">
 	</td>
 	<td class="description">
-	  In the form "Jane U Doe".
+	  Full personal name in the form "Jane U Doe".
 	</td>
       </tr>
 

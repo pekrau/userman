@@ -146,7 +146,7 @@ class UserEdit(UserMixin, RequestHandler):
                     saver['role'] = role
                 saver['services'] = self.get_arguments('service')
             saver['username'] = self.get_argument('username', None)
-            saver['fullname'] = self.get_argument('fullname')
+            saver['name'] = self.get_argument('name')
             saver['department'] = self.get_argument('department', None)
             saver['university'] = self.get_argument('university', None)
             saver['country'] = self.get_argument('country')
@@ -200,7 +200,7 @@ class UserCreate(UserApproveMixin, RequestHandler):
             saver['email'] = self.get_argument('email')
             saver['username'] = self.get_argument('username', None)
             saver['role'] = constants.USER
-            saver['fullname'] = self.get_argument('fullname')
+            saver['name'] = self.get_argument('name')
             saver['department'] = self.get_argument('department', None)
             saver['university'] = self.get_argument('university', None)
             saver['country'] = self.get_argument('country')
