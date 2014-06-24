@@ -24,7 +24,9 @@ Design notes
 The API is designed such that all data sent to and received from the
 interface is JSON containing pure application data. Metadata, such as
 the API access token, is passed as a HTTP header item, so as not to
-clutter up the data namespace.
+clutter up the data namespace. This also allows for sending other types
+of data as body content, such as images, which cannot contain API access
+tokens.
 
 Tip: Use the `requests <http://docs.python-requests.org/en/latest/>`_
 package for all HTTP client code. It is way better than the urllib2
