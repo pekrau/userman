@@ -280,7 +280,6 @@ class UserActivate(RequestHandler):
 
     def get(self):
         self.render('user_activate.html',
-                    error=None,
                     email=self.get_argument('email', ''),
                     activation_code=self.get_argument('activation_code', ''))
 

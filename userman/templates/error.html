@@ -1,0 +1,8 @@
+{# Error message output section. #}
+
+{% try %}
+  {% if error %}
+  <div class="error">Error: {{ error }}</div>
+  {% end %}
+{% except NameError %}
+{% end %}

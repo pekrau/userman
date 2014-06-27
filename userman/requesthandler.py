@@ -27,7 +27,6 @@ class RequestHandler(tornado.web.RequestHandler):
         result['version'] = userman.__version__
         result['settings'] = settings
         result['constants'] = constants
-        result['error'] = None
         result['current_user'] = self.get_current_user()
         result['is_admin'] = self.is_admin()
         result['self_url'] = self.request.uri
