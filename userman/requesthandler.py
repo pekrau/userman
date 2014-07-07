@@ -33,7 +33,7 @@ class RequestHandler(tornado.web.RequestHandler):
         return result
 
     def get_absolute_url(self, name, *args, **kwargs):
-        "Get the absolute URL given the reverse_url name and any arguments."
+        "Get the absolute URL given the handler name and any arguments."
         if name is None:
             path = ''
         else:
