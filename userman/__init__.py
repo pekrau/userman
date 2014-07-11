@@ -3,7 +3,7 @@
 This implementation uses Tornado (3.2 or later) and CouchDB (1.0.1 or later).
 """
 
-__version__ = '14.6'
+__version__ = '14.7'
 
 # These values are minimal default values appropriate for debugging.
 # The actual values are read in by utils.load_settings()

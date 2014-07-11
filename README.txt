@@ -51,10 +51,10 @@ The development server is upgraded thus:
 
 ::
 
-    pip install --upgrade --no-deps git+https://github.com/pekrau/userman
+    $ pip install --upgrade --no-deps git+https://github.com/pekrau/userman
 
 The Tornado service is controlled by the upstart script
-``/etc/init/userman``.
+``/etc/init/userman.conf``.
 
 The Apache server handles the redirect from the domain name to the
 Tornado server which runs on port 8881. See
