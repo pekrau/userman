@@ -45,20 +45,34 @@ def create_user_admin(db):
 
 if __name__ == '__main__':
     import sys
-    import argparse
-    parser = argparse.ArgumentParser(description='Initialize and load Userman database from dump file')
-    parser.add_argument('--force', action='store_true',
-                        help='force action, rather than ask for confirmation')
-    parser.add_argument('filepath', type=str, nargs='?', default=None,
-                        help='filepath for YAML settings file')
-    args = parser.parse_args()
-    print args
+
+    # argparse only in Python 2.7 and later!
+    # import argparse
+    # parser = argparse.ArgumentParser(description='Initialize and load Userman database from dump file')
+    # parser.add_argument('--force', action='store_true',
+    #                     help='force action, rather than ask for confirmation')
+    # parser.add_argument('filepath', type=str, nargs='?', default=None,
+    #                     help='filepath for YAML settings file')
+    # args = parser.parse_args()
     
-    if not args.force:
+    import optparse
+    parser = optparse.OptionParser()
+    parser.add_option("-f", "--force",
+                      action="store_true", dest="force", default=True,
+                      help='force action, rather than ask for confirmation')
+    (options, args) = parser.parse_args()
+
+    if not options.force:
         response = raw_input('about to delete everything; really sure? [n] > ')
         if not utils.to_bool(response):
             sys.exit('aborted')
-    utils.load_settings(filepath=args.filepath)
+    if len(args) == 0:
+        filepath = None
+    elif len(args) == 1:
+        filepath = args[0]
+    else:
+        sys.exit('too many arguments')
+    utils.load_settings(filepath=filepath)
 
     db = utils.get_db()
     wipeout_database(db)
@@ -66,7 +80,7 @@ if __name__ == '__main__':
     load_designs(db)
     print 'loaded designs'
     default = 'dump.tar.gz'
-    if args.force:
+    if options.force:
         filename = default
     else:
         filename = raw_input("load data from file? [{0}] > ".format(default))
