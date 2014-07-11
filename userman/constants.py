@@ -2,7 +2,10 @@
 
 import re
 
-HIGH_CHAR = unichr(2**16)
+# For CouchDB view ranges.
+# CouchDB uses the Unicode Collation Algorithm, which is not the same
+# as the ASCII collation sequence. The endkey is inclusive, by default.
+HIGH_CHAR = 'ZZZZZZZZ'
 
 IUID_RX   = re.compile(r'^[0-9a-z]{32}$')
 
