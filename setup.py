@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-import os
 from setuptools import setup
-
-os.system("pandoc -o README.txt -f markdown -t rst README.md")
 
 setup(name='userman',
       version='14.7',

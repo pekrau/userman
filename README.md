@@ -29,6 +29,12 @@ package for all HTTP client code. It is way better than the urllib2 package
 in the standard Python distribution.
 
 
+### Packacke notes ###
+
+Create the text variant of the README:
+
+    pandoc -o README.txt -f markdown -t rst README.md
+
 ## Development server ##
 
 The development server is at http://userman-dev.scilifelab.se/ .
