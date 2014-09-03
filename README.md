@@ -46,7 +46,7 @@ The development server is upgraded thus:
 
     $ pip install --upgrade --no-deps git+https://github.com/pekrau/userman
 
-The Tornado service is controlled by the upstart script `/etc/init/userman.conf`.
+The Tornado service is started by the `/etc/rc.local` script.
 
 The Apache server handles the redirect from the domain name to the Tornado
 server which runs on port 8881. See `/etc/httpd/conf/httpd.conf`.
@@ -57,7 +57,20 @@ the install directory.
 
 ## Production server ##
 
-The production server has not yet been installed.
+The source code used in production is located in:
+
+    /usr/lib/python2.6/site-packages/userman
+
+The configuration file is tools.yaml, of which a backup copy exists in:
+
+    /home/per.kraulis/userman
+
+The production server is upgraded thus:
+
+    $ pip install --upgrade --no-deps git+https://github.com/pekrau/userman
+
+The Tornado service is started by the `/etc/rc.local` script.
+
 It will probably be at https://userman.scilifelab.se/ and will be reachable
 from outside SciLifeLab. Accounts will be subject to approval by the
 Userman administrator.
