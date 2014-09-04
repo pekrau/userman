@@ -25,12 +25,15 @@ def load_settings(filepath=None):
     Raise ValueError if the settings variable value is invalid."""
     homedir = os.path.expandvars('$HOME')
     basedir = os.path.dirname(__file__)
+    localdir = '/var/local/userman'
     if not filepath:
         hostname = socket.gethostname().split('.')[0]
         for filepath in [os.path.join(homedir, "{0}.yaml".format(hostname)),
                          os.path.join(homedir, 'default.yaml'),
                          os.path.join(basedir, "{0}.yaml".format(hostname)),
-                         os.path.join(basedir, 'default.yaml')]:
+                         os.path.join(basedir, 'default.yaml'),
+                         os.path.join(localdir, "{0}.yaml".format(hostname)),
+                         os.path.join(localdir, 'default.yaml')]:
             if os.path.exists(filepath) and \
                os.path.isfile(filepath) and \
                os.access(filepath, os.R_OK):

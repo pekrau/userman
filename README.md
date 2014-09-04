@@ -67,16 +67,21 @@ The source code used in production is located in:
 
     /usr/lib/python2.6/site-packages/userman
 
-The configuration file is tools.yaml, of which a backup copy exists in:
+The configuration file tools.yaml is located in:
 
-    /home/per.kraulis/userman
+    /var/local/userman
+
+The log file userman.log is located in:
+
+    /var/log/userman
 
 The production server is upgraded thus:
 
     $ pip install --upgrade --no-deps git+https://github.com/pekrau/userman
 
-The Tornado service is started by the `/etc/rc.local` script.
+The production server is currently started manually by Per Kraulis under
+the account genomics.www using the following command:
 
-It will probably be at https://userman.scilifelab.se/ and will be reachable
-from outside SciLifeLab. Accounts will be subject to approval by the
-Userman administrator.
+    $ su - genomics.www -c "cd /usr/lib/python2.6/site-packages/userman && python2.6 app_userman.py &"
+
+*Yes, this is awful!* But the /etc/init.d stuff has not been written yet...
