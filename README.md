@@ -82,6 +82,7 @@ The production server is upgraded thus:
 The production server is currently started manually by Per Kraulis under
 the account genomics.www using the following command:
 
-    $ su - genomics.www -c "cd /usr/lib/python2.6/site-packages/userman && python2.6 app_userman.py &"
+    $ cd /usr/lib/python2.6/site-packages/userman
+    $ sudo -u genomics.www python2.6 app_userman.py /var/local/userman/tools.yaml &
 
 *Yes, this is awful!* But the /etc/init.d stuff has not been written yet...
