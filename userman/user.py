@@ -81,26 +81,6 @@ class UserMixin(object):
         if not self.may_access_user(user):
             raise tornado.web.HTTPError(403, 'you may not access user')
 
-    def notify(self, user):
-        "Notify all services enabled for the user about a user event."
-        for name in user.get('services', []):
-            try:
-                service = self.get_service(name)
-            except tornado.web.HTTPError:
-                logging.debug("accessing invalid service %s for account %s",
-                              name, user['email'])
-            else:
-                href = service.get('notify_href')
-                if href:
-                    url = self.get_absolute_url('api_user', user['email'])
-                    data = json.dumps(dict(event='user', href=url))
-                    response = requests.post(href, data=data)
-                    if response.status_code not in (200, 202, 204):
-                        logging.debug("%s notify error: %s %s",
-                                      name,
-                                      response.status_code,
-                                      response.reason)
-
 
 class User(UserMixin, RequestHandler):
     "Display a user account."
@@ -150,7 +130,6 @@ class UserEdit(UserMixin, RequestHandler):
             saver['department'] = self.get_argument('department', None)
             saver['university'] = self.get_argument('university', None)
             saver['country'] = self.get_argument('country')
-        self.notify(user)
         self.redirect(self.reverse_url('user', user['email']))
 
 
