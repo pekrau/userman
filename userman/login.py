@@ -32,11 +32,11 @@ class Login(RequestHandler):
             try:
                 user = self.get_user(email, require_active=True)
             except tornado.web.HTTPError, msg:
-                raise ValueError('invalid user email or password')
+                raise ValueError('invalid user email')
             if user.get('password') != utils.hashed_password(password):
                 changed = dict(login_failure=self.request.remote_ip)
                 utils.log(self.db, user, changed=changed)
-                raise ValueError('invalid user email or password')
+                raise ValueError('invalid password')
             self.set_secure_cookie(constants.USER_COOKIE_NAME, email)
             self._user = user
             url = self.get_argument('next', self.reverse_url('home'))

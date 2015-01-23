@@ -1,12 +1,10 @@
 # Userman #
 
 Simple user account handling system for use with web services.
-Built on top of Tornado and CouchDb.
+Built on top of Tornado and CouchDB.
 
 
 ## API ##
-
-The RESTful API is documented at http://userman-dev.scilifelab.se/apidoc .
 
 A number of code examples for using the API can be found in the
 nosetest `test_*.py` files.
@@ -25,8 +23,8 @@ data namespace. This also allows for sending other types of data as body
 content, such as images, which cannot contain API access tokens.
 
 Tip: Use the [requests](http://docs.python-requests.org/en/latest/)
-package for all HTTP client code. It is way better than the urllib2 package
-in the standard Python distribution.
+package for all HTTP client code. It is much better than the urllib2
+package in the standard Python distribution.
 
 
 ### Packacke notes ###
